@@ -1,0 +1,6 @@
+<article class="prose lg:prose-xl">
+    <h2 class="text-4xl font-extrabold mb-4"><%= @post.frontmatter.title %></h2>
+    <p class="text-sm text-gray-500">Published on: <%= @post.frontmatter.date %></p>
+
+    <%= @post.html_body %>
+</article>
