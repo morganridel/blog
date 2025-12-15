@@ -24,8 +24,8 @@ defmodule Blog.Builder do
   end
 
   defp copy_assets(output_dir) do
-    if File.exists?("assets/css/output.css") do
-      File.cp!("assets/css/output.css", Path.join(output_dir, "static/app.css"))
+    if File.exists?("output.css") do
+      File.cp!("output.css", Path.join(output_dir, "static/app.css"))
     end
   end
 end

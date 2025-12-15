@@ -7,5 +7,5 @@ author: Morgan
 Hello **Elixir** static site generator.
 
 * bullet list
-* bullet list
+* bullet list 2
 * bullet list

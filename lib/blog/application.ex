@@ -7,13 +7,11 @@ defmodule Blog.Application do
 
   @impl true
   def start(_type, _args) do
-    children = [
-      # Starts a worker by calling: Blog.Worker.start_link(arg)
-      # {Blog.Worker, arg}
-    ]
+    IO.inspect(Application.get_env(:blog, :env))
 
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
+    children =
+      []
+
     opts = [strategy: :one_for_one, name: Blog.Supervisor]
     Supervisor.start_link(children, opts)
   end

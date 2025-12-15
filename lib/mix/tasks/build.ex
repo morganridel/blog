@@ -22,7 +22,7 @@ defmodule Mix.Tasks.Build do
   defp build_tailwind do
     Logger.info("📦 Compiling Tailwind CSS via npm...")
 
-    command = "npx @tailwindcss/cli -i ./assets/css/app.css -o ./assets/css/output.css"
+    command = "npx @tailwindcss/cli -i ./assets/css/app.css -o ./output.css"
 
     case System.cmd("sh", ["-c", command]) do
       {_output, 0} ->

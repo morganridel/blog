@@ -22,7 +22,7 @@ erl_crash.dump
 # Ignore package tarball (built via "mix hex.build").
 blog-*.tar
 
-assets/css/output.css
+output.css
 public/
 node_modules/
 .DS_Store
