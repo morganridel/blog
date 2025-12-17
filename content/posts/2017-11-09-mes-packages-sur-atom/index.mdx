@@ -1,0 +1,100 @@
+---
+title: Mes packages sur Atom
+author: Morgan Ridel
+date: 2017-11-09
+---
+
+**EDIT 31/12/2019:** Je n'utilise plus Atom, mon éditeur "léger" est maintenant **Visual Studio Code**.
+
+[Atom](https://atom.io/) est un éditeur de texte léger et très modulable. J'ai commencé à l'utiliser sans vraiment avoir le choix, car l'école interdit l'utilisation d'IDE en examen et j'ai donc préféré m'habituer à un environnement de programmation auquel j'avais le droit pendant les examens.
+
+Un des avantages d'Atom est qu'il existe une base de données de "packages" permettant d'ajouter ou d'améliorer de fonctionnalités de l'éditeur. On peut ainsi en trouver pour obtenir l'auto-complétion sur un bon nombre de langages, nous faciliter la vie pendant qu'on programme, et même coder soi-même son propre package si l'envie nous prends.
+
+Je liste dans cet article une partie des packages qui me servent le plus souvent au quotidien !
+
+Je mettrais cette liste à jour si d'autres packages attirent particulièrement mon attention ou qu'ils rentrent dans mon utilisation quotidienne.
+
+
+
+## Liste des packages
+
+
+
+
+
+### Général
+
+
+
+
+
+
+
+  * file-icons: Ajoute simplement des icones dans l'arbre des fichiers à gauche de chaque fichier en fonction de son extension. Une modification infime en soi, mais qui me facilite énormément la recherche visuelle lorsque je dois rapidement trouver le fichier de style au milieu de tous les autres par exemple.
+
+
+  * highlight-selected: Lorsqu'un mot est sélectionné, surligne tous les autres endroits où ce mot est présent dans le fichier. Pratique également pour repérer rapidement certains éléments.
+
+
+  * pigments: Possède plusieurs fonctionalités, mais celle que j’utilise principalement c'est simplement le fait que ce package colore les (codes hexadecimaux)[] ou les représentations des couleurs en général directement dans le fichier. Cela évite de devoir aller voir sur internet à quelle couleur correspond quel code.
+
+
+  * platformio-ide-terminal: Inclut un terminal directement dans l'éditeur. Je trouve ça extrêmement pratique. Sans compter que le terminal s'initialise directement à la racine du projet en cours ! On peut aussi le configurer pour utiliser d'autre terminaux que celui par defaut.
+
+
+
+
+
+### Pour les cours de Java
+
+
+
+Le fait de ne pas pouvoir utiliser d'IDE rendait parfois la programmation en java plus longue que nécessaire, heureusement ces packages m'ont épargnés quelques dizaines de minutes de problèmes !
+
+
+
+
+
+  * linter-javac: Compile les classes au fur et à mesure de l'écriture pour afficher les erreurs dans le code en direct. Permet d'éliminer rapidement des erreurs du type oubli de point virgule, fautes d'orthographe ou paramètre du mauvais type.
+
+
+  * autocomplete-java: Complémente le package précédent. Propose des complétions automatiques quand on écrit des noms de classes, des méthodes etc... Ajoute aussi automatiquement les import si vous validez la complétion d'une classe reconnue !
+
+
+  * docblockr: Pendant le projet que j'ai du réaliser en Java, nous étions obligé d'écrire la javadoc de pratiquement toutes nos méthodes. Ce package permet de générer automatiquement un template de javadoc à compléter au dessus des méthodes, en prévoyant les champs pour chaque paramètre.
+
+
+
+
+
+### Pour le développement Web
+
+
+
+
+
+
+
+  * emmet: Permet d'écrire des expressions qui seront convertis ensuite en code html par une simple tabulation. C'est assez intuitif après avoir vu quelques exemples.
+
+
+
+```html
+div.container>ul>li{élément $}*5
+```
+
+Devient:
+
+```html
+<div class="container">
+<ul>
+    <li>élément 1</li>
+    <li>élément 2</li>
+    <li>élément 3</li>
+    <li>élément 4</li>
+    <li>élément 5</li>
+</ul>
+</div>
+```
+
+Ce package peut faire gagner beaucoup de temps d'écriture, et je suis certain qu'une fois maitrisé il doit permettre de créer des pages de façon incroyablement rapide.
