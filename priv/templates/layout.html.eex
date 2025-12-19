@@ -6,15 +6,14 @@
     <title><%= @page_title %></title>
     <link rel="stylesheet" href="/static/app.css">
 </head>
-<body>
-    <header class="bg-gray-800 text-white p-4">
-        <h1 class="text-2xl font-bold">My Elixir Blog</h1>
+<body class='bg-neutral text-stone-900'>
+    <header class="cluster gap-md p-xs">
+        <a href="/" class="text-2xl text-primary">Morgan Ridel</h1>
+        <a href="/" class="text-xl text-secondary">Blog</h1>
+        <a href="/about" class="text-xl text-secondary">About</h1>
     </header>
-    <main class="container mx-auto p-4">
+    <main class="page flow flow-xl">
         <%= @inner_content %>
     </main>
-    <footer class="bg-gray-200 p-4 text-center">
-        &copy; 2023 My Elixir SSG
-    </footer>
 </body>
 </html>

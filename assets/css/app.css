@@ -1,2 +1,63 @@
 @import "tailwindcss";
 
+@layer base {
+  .page {
+    @apply mx-auto max-w-[75rem] px-md;
+  }
+
+  .flow > * + * {
+    /* use locally define --flow-space or default to md spacing */
+    margin-top: var(--flow-space, var(--spacing-md));
+  }
+
+  .cluster {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: var(--cluster-horizontal-alignment, flex-start);
+    align-items: var(--cluster-vertical-alignment, center);
+  }
+
+
+}
+
+@layer components {
+
+}
+
+@utility flow-xs { --flow-space: var(--spacing-xs); }
+@utility flow-sm { --flow-space: var(--spacing-sm); }
+@utility flow-md { --flow-space: var(--spacing-md); }
+@utility flow-lg { --flow-space: var(--spacing-lg); }
+@utility flow-xl { --flow-space: var(--spacing-xl); }
+
+@theme {
+  /* Spacing scale (eventually move to clamps/utopia/gridless if needed to avoid breakpoint) */
+  --spacing-xs: 0.5rem;    /* 8px */
+  --spacing-sm: 1rem;      /* 16px */
+  --spacing-md: 1.5rem;    /* 24px */
+  --spacing-lg: 2.5rem;    /* 40px */
+  --spacing-xl: 4rem;      /* 64px */
+  
+  /* color palette */
+  --color-primary: var(--color-amber-500);
+  --color-secondary: var(--color-stone-700);
+  --color-accent: var(--color-rose-600);
+  --color-neutral: var(--color-stone-50); /* good for backgrounds */
+  --color-success: var(--color-emerald-700);
+  --color-warning: var(--color-yellow-600);
+  --color-error: var(--color-orange-700);
+  /* text-stone-900 for text? */
+  
+  /* typorgaphy scale (eventually move to clamps/utopia/gridless if needed to avoid breakpoint) */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;     /* 16px */
+  --font-size-lg: 1.25rem;    /* 20px */
+  --font-size-xl: 1.5rem;     /* 24px */
+  --font-size-2xl: 2rem;      /* 32px */
+  --font-size-3xl: 2.5rem;    /* 40px */
+  
+  /* BORDER RADIUS */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+}

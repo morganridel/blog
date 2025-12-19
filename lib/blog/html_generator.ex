@@ -21,17 +21,23 @@ defmodule Blog.HTMLGenerator do
     site_config = Application.get_all_env(:blog)
 
     inner_content = """
-    <div class="max-w-2xl mx-auto">
-      <h2 class="text-3xl font-bold mb-8">Latest Articles</h2>
-      <div class="space-y-6">
-        #{Enum.map_join(posts, "\n", fn post -> """
-      <div class="border-b pb-4">
-        <a href="#{post.url}" class="text-2xl text-blue-600 hover:text-blue-800 font-semibold">#{post.frontmatter.title}</a>
-        <p class="text-gray-500 text-sm mt-1">#{post.frontmatter.date} • #{site_config[:author]}</p>
+    <section>
+      <h2 class="text-3xl font-bold">First section</h2>
+      <div class="flow">
+        Some random things here
       </div>
+    </section>
+    <section class="flow">
+      <h2 class="text-3xl font-bold">Latest Articles</h2>
+      <div class="flow flow-xs">
+        #{Enum.map_join(posts, "\n", fn post -> """
+        <div class="border-b">
+          <a href="#{post.url}" class="text-2xl text-blue-600 hover:text-blue-800 font-semibold">#{post.frontmatter.title}</a>
+          <p class="text-gray-500 text-sm">#{post.frontmatter.date} • #{site_config[:author]}</p>
+        </div>
       """ end)}
       </div>
-    </div>
+    </section>
     """
 
     render_layout(
