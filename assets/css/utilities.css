@@ -1,0 +1,48 @@
+@source inline("stack-{xs,sm,md,lg,xl,xxl}");
+@source inline("box-{xs,sm,md,lg,xl,xxl}");
+@source inline("box-bd-{xs,sm,md,lg,xl,xxl}");
+
+/* I am using flex gap instead of the owl selector because 
+    I don't really need the benefits or exceptions for now */
+
+@utility stack-* {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: --value(--spacing);
+}
+
+
+/* I ignore most of the color and background-color for now, assuming I will set those as tailwind utilities */
+@utility box-* {
+    padding: --value(--spacing);
+}
+
+@utility box-border-* {
+    border-width: --value(--border-width);
+    border-style: solid
+}
+
+@utility center {
+    /* We disable border box, because center is an exception.
+    We don't want the padding of the center to count toward the max-inline-size */
+    box-sizing: content-box;
+    max-inline-size: var(--measure);
+    margin-inline: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+@utility center-* {
+    padding-inline-start: --value(--spacing);
+    padding-inline-end: --value(--spacing);
+}
+
+@utility cluster-* {
+    display: flex;
+    flex-wrap: wrap;
+    gap: --value(--spacing);
+    justify-content: flex-start;
+    align-items: center;
+}
