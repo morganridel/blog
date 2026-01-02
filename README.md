@@ -19,10 +19,10 @@ mix deps.get
 To start the development server, which will watch for file changes and rebuild automatically, run:
 
 ```
-mix run --no-halt
+mise dev
 ```
 
-The server will be available at `http://localhost:4000`.
+The server will be available at `http://localhost:3000`.
 
 ## Build
 
