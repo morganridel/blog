@@ -4,6 +4,7 @@ defmodule Generator do
   alias Generator.CollectionItem
   alias Generator.PageConfig
   alias Generator.Site
+  alias Generator.Utils
   require Logger
 
   def init(_config \\ %{}) do
@@ -100,7 +101,7 @@ defmodule Generator do
 
     final_render = apply_layouts(item.body, item.layout, assigns, site)
 
-    output_path = Path.join([site.output_dir, item.permalink, "index.html"])
+    output_path = output_path(site.output_dir, item.permalink)
 
     with :ok <- File.mkdir_p(Path.dirname(output_path)) do
       File.write!(output_path, final_render |> Phoenix.HTML.Safe.to_iodata())
@@ -118,7 +119,8 @@ defmodule Generator do
 
     final_render = apply_layouts(rendered_page, config.layout, full_assigns, site)
 
-    output_path = Path.join([site.output_dir, config.permalink, "index.html"])
+    output_path =
+      output_path(site.output_dir, config.permalink)
 
     with :ok <- File.mkdir_p(Path.dirname(output_path)) do
       File.write!(output_path, final_render |> Phoenix.HTML.Safe.to_iodata())
@@ -133,6 +135,13 @@ defmodule Generator do
     case layout.config(site).parent do
       nil -> wrapped_content
       parent_layout -> apply_layouts(wrapped_content, parent_layout, assigns, site)
+    end
+  end
+
+  defp output_path(output_dir, permalink) when is_binary(permalink) do
+    case Utils.remove_trailing_slash(permalink) do
+      "" -> Path.join([output_dir, "index.html"])
+      permalink -> Path.join([output_dir, permalink <> ".html"])
     end
   end
 
