@@ -1,0 +1,314 @@
+---
+title: Les contextes d’exécution en JavaScript
+permalink: /les-contextes-d-execution-en-javascript
+author: Morgan Ridel
+date: 2017-08-31
+hero: /static/images/stacking-stones-667432_1280.jpg
+---
+
+Le Javascript peut parfois avoir des comportements étranges quand on est habitué à d'autres langages de programmation. Aujourd'hui, nous allons nous pencher sur les contextes d'exécution. Ceux-ci gèrent l'ordre d'exécution du code, et vont nous permettre de comprendre comment les déclarations de fonctions et de variables sont interprétées.
+
+
+
+## L'environnement lexical
+
+
+
+Avant de se plonger dans les contextes d'exécution, nous devons comprendre ce qu'est un "environnement lexical" car ce sont des notions étroitement liées.
+
+Pour cela, j'ai fouillé dans la [spécification d'ECMAScript](http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf) (qui correspond aux standards suivis par le JavaScript) pour y trouver la définition suivante:
+_"A Lexical Environment is a specification type used to define the association of Identifiers to specific variables and functions based upon the lexical nesting structure of ECMAScript code."_
+
+Pour simplifier, je traduirai et reformulerai cette définition par:
+_"Un environnement lexical associe des identifiants à leurs variables et fonctions selon leur imbrication dans le code."_
+
+Autrement dit, la variable qui est associée à un identifiant dépend de l'emplacement "physique" de cet identifiant dans le code, en particulier du bloc de code dans lequel il se trouve.
+
+Cela permet par exemple d'avoir plusieurs variables qui ont le même identifiant si elles sont dans deux environnements lexicaux différents.
+
+![](/static/images/envlexical.jpg)
+
+Sur l'image ci-dessus, chaque couleur représente un environnement lexical différent.
+
+
+
+
+
+  * L'environnement entouré de blanc contient:
+
+
+  * une fonction a
+
+
+  * une fonction b
+
+
+  * une variable **maVariable**
+
+
+  * L'environnement bleu (environnement de la fonction a) est vide
+
+
+  * L'environnement vert contient:
+
+
+  * une fonction b1
+
+
+  * une fonction b2
+
+
+  * une variable **maVariable**
+
+
+  * L'environnement jaune contient:
+
+
+  * une variable **maVariable**
+
+
+  * L'environnement orange est vide
+
+
+
+Dans cette situation, les 3 identifiants **maVariable** représentent des variables différentes et ne s'affectent pas entre elles. L'exécution de ce code renvoie:
+
+```
+`1
+1
+```
+
+Avec la connaissance des environnements lexicaux, nous pouvons désormais voir comment fonctionnent les contextes d'exécution !
+
+
+
+## Les contextes d'exécution
+
+
+
+En JavaScript, un contexte d'exécution est une entité regroupant des informations sur un morceau de code exécutable. Il est associé à un environnement lexical.
+
+Quand un script JavaScript est exécuté, le contexte d'exécution dit "global" est créé. Ensuite, chaque appel de fonction crée un nouveau contexte d'exécution associé à cette fonction. Un contexte d'exécution persiste le temps de réaliser 2 phases:
+
+
+
+
+
+  1. La phase de création
+
+
+  2. La phase d'exécution
+
+
+
+Les contextes d'exécution sont empilés dans la **pile d'exécution**. Ils sont retirés de la pile une fois leurs 2 phases réalisées et chaque nouveau contexte est ajouté sur le dessus de la pile.
+
+Ainsi, le bas de la pile est le contexte d'exécution global. Chaque fonction appelée dans ce contexte l'interrompt et crée un nouveau contexte d'exécution et ainsi de suite si des fonctions sont appelées dans ce nouveau contexte d'exécution.
+
+Pour mieux comprendre, aidons-nous d'un exemple pratique:
+
+```javascript
+function f1() {
+f2();
+}
+
+function f2() {
+console.log("Je suis exécuté en haut de la pile !");
+}
+
+console.log("Je suis exécuté dans le contexte d'exécution global !");
+f1();
+console.log("Je finis mon exécution maintenant que les contextes de f1 et f2 ont disparus !");
+```
+
+Sans grande surprise, si vous l'habitude de programmer vous pouvez deviner le résultat:
+
+```
+`"Je suis exécuté dans le contexte d'exécution global !"
+"Je suis exécuté en haut de la pile !"
+"Je finis mon exécution maintenant que les contextes de f1 et f2 ont disparus !"
+```
+
+![](/static/images/pileexec.jpg)
+
+Au début, le contexte d'exécution global affiche la première ligne dans la console. Puis un nouveau contexte "f1" est créée et ajouté à la pile, puis dans ce contexte un autre contexte f2 est créée. Celui-ci va afficher ""Je suis exécuté en haut de la pile !" dans la console. Son exécution terminée il va être dépilé et on retourne alors dans le contexte f1. Le contexte f1 se termine immédiatement car il n'y a plus d'instruction après l'appel de f2. On retourne alors dans le contexte global pour le dernier log dans la console.
+
+Ce comportement est très similaire à ce qui se passe dans les autres langages. Nous allons maintenant étudier les 2 phases des contextes d'exécution plus en détail pour découvrir les subtilités du Javascript.
+
+
+
+### La phase de création
+
+
+
+Lors de la création d'un contexte d'exécution, plusieurs éléments sont déterminés:
+
+
+
+
+
+  * L'objet global (dans le cas du contexte d'exécution global): cet objet est `window` dans un navigateur web
+
+
+  * La valeur de `this`
+
+
+  * L'environnement lexical extérieur : C'est une référence vers l'environnement lexical englobant l'environnement lexical du contexte d'exécution. (C'est assez visible en regardant l'imbrication des blocs dans l'image de la section correspondante plus haut).
+
+
+
+De plus il s'y déroule aussi le "hoisting". Tout le code du contexte d'exécution est parcouru et l'espace mémoire est réservé pour toutes les fonctions et variables de son environnement lexical. Les fonctions sont stockées entièrement tandis que les variables sont initialisé à "undefined".
+
+C'est une subtilité importante.
+
+Le hoisting permet d'appeler une fonction avant sa déclaration. Pour ce qui est des variables, si on appelle une variable avant sa déclaration, elle aura bien une valeur: **undefined**. Cependant, si elle n'a pas été déclarée, JavaScript renverra une erreur.
+
+```javascript
+f();
+console.log(a);
+
+var a = 4;
+
+function f() {
+console.log("Je suis une fonction");
+}
+```
+
+Ce code donne:
+
+```
+`"Je suis une fonction"
+undefined
+```
+
+Si on ne déclare pas la variable:
+
+```javascript
+f();
+console.log(a);
+
+function f() {
+console.log("Je suis une fonction");
+}
+```
+
+```
+`"Je suis une fonction"
+ReferenceError: a is not defined
+```
+
+
+
+### La phase d'exécution
+
+
+
+La phase d'exécution se contente d'exécuter le code ligne par ligne de façon synchrone (1 action à la fois). Le détail que nous allons identifier ici, c'est la façon dont la valeur d'une variable est retrouvée à partir de son identifiant.
+
+Pendant l’exécution, le contexte d’exécution utilise l'environnement lexical pour trouver les variables à partir de leur identifiants.
+
+En effet, lorsqu'on appelle une variable (ou une fonction), le contexte d'exécution va d'abord regarder si cette variable se trouve dans l'environnement lexical actuel. Cependant, si la variable ne s'y trouve pas, il va ensuite chercher si cette variable existe dans l'environnement lexical extérieur et ainsi de suite jusqu'à l'environnement global.
+
+La subtilité est que l'environnement lexical extérieur n'est pas forcément celui du contexte d'exécution juste en dessous dans la pile.
+
+Reprenons le code de tout à l'heure:
+
+```javascript
+function f1() {
+f2();
+}
+
+function f2() {
+console.log("Je suis exécuté en haut de la pile !");
+}
+
+console.log("Je suis exécuté dans le contexte d'exécution global !");
+f1();
+console.log("Je finis mon exécution maintenant que les contextes de f1 et f2 ont disparus !");
+```
+
+![](/static/images/pileexecenvext.jpg)
+
+Ici, f1 et f2 ont le même environnement lexical. (ils font parti du même bloc englobant, le bloc global)
+
+Si on décide d'appeler une variable dans f2, mais qu'elle ne s'y trouve pas. Le contexte d'exécution va chercher cette variable dans l'environnement lexical du contexte d'exécution global et non pas dans celui de f1.
+
+Pour illustrer, exécutons le code ci-dessous:
+
+```javascript
+function f1() {
+var age = 18;
+f2();
+}
+
+function f2() {
+function a() {
+console.log(age);
+}
+a();
+}
+
+var age = 16;
+f1();
+```
+
+Ici on déclare age à 16 dans le contexte global, puis on appelle f1 qui déclare age à 18 qui lui même appelle f2 qui lui même appelle a qui affiche age.
+On doit regarder les environnements lexicaux dans l'ordre pour trouver la valeur de age:
+
+
+
+
+
+  * a ne contient pas de variable age, on regarde donc à l'extérieur, dans f2
+
+
+  * f2 ne contient pas de variable age, on regarde donc à l'extérieur, dans l'environnement lexical global (et non pas dans celui de la fonction appelante f1 !!).
+
+
+  * Il y a bien une variable age dans cet environnement.
+
+
+
+Le résultat est donc:
+
+```
+`16
+```
+
+
+
+## Pour finir
+
+
+
+Il ne faut pas mélanger les particularités de la pile d'exécution et des environnements lexicaux. Après avoir lu cet article, pouvez-vous prédire la sortie du code suivant ? (code tiré de [StackOverflow](https://stackoverflow.com/questions/11532072/defining-javascript-variables-inside-if-statements))
+
+```javascript
+var foo = 10;
+myfunc();
+
+function myfunc() {
+if (foo > 0) {
+var foo = 0;
+alert('foo was greater than 10');
+} else {
+alert('wut?');
+}
+}
+```
+
+Essayez de trouver par vous même avant de regarder la solution !
+
+...
+
+...
+
+...
+
+...
+
+...
+
+...
+
+Le résultat est "wut?" ! En effet il ne faut pas oublier le hoisting ! Lors de l'appel de myfunc, le hoisting à repéré la déclaration (var) dans le if. Ainsi il initialise la variable foo à undefined dans l'environnement lexical de myfunc. Lors de l'exécution, il n'y a donc pas besoin de regarder l'environnement extérieur (où foo = 10) car undefined est bien une valeur valable.

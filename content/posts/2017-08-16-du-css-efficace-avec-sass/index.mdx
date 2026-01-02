@@ -1,0 +1,243 @@
+---
+title: "Du CSS efficace avec Sass : Boostez vos feuilles de style !"
+permalink: /du-css-efficace-avec-sass-boostez-vos-feuilles-de-style
+author: Morgan Ridel
+date: 2017-08-16
+hero: /static/images/sass-logo-wall.jpg
+---
+
+Depuis que j'ai commencé [mon projet avec ionic](../mes-debuts-avec-ionic/) j'ai dû apprendre à utiliser les langages fournis par le framework pour programmer. L'un d'entre eux est Sass.
+
+Sass est une extension du CSS qui permet de lui rajouter des "super pouvoirs". Il permet entre autre d'appliquer des styles de façon hiérarchique comme du html, ou de stocker des valeurs dans des variables. De quoi nous épargner de nombreuses lignes tout en rendant nos fichiers de style plus lisibles !
+
+Après l'avoir utilisé un peu pour mon projet, j'ai décidé d'aller regarder ce que Sass permettait plus en détail, et c'est ce que je vais partager avec vous aujourd'hui !
+
+
+
+## Installer Sass
+
+
+
+Sass nécessite d'être installé à l'aide de [Ruby](https://rubyinstaller.org/), il existe aussi des [implémentations dans d'autres langages](http://sass-lang.com/libsass).
+
+Une fois Ruby installé il suffit d'entrer la commande suivante dans un terminal:
+
+```bash
+gem install sass
+```
+
+Puis de vérifier que l'installation est réussie si la commande suivante fonctionne:
+
+```
+`sass -v
+```
+
+
+
+## Utiliser Sass
+
+
+
+Une fois installé, il est possible d'écrire des fichiers d'extension .scss qui seront ensuite compilés en .css grâce à Sass.
+
+La commande suivante permet de compiler un fichier .scss pour et de créer un fichier css compréhensible par le navigateur:
+
+```bash
+sass fichierSass.scss fichierCss.css
+```
+
+Cependant c'est rapidement lourd de compiler à chaque changement, il existe donc un moyen d'observer tous les fichiers Sass d'un dossier afin de créer les fichiers CSS dans un autre dossier à chaque modification.
+
+```bash
+sass --watch style/sass:style
+```
+
+Ainsi tous les fichiers .scss contenus dans le répertoire style/sass/ seront automatiquement convertis dans le répertoire style/ .
+
+
+
+### Les variables et la hiérarchie
+
+
+
+Sass permet d'organiser ses feuilles de style de façon beaucoup plus efficace grâce aux variables et à la hiérarchie des règles. Cela permet d'éviter énormément de répétition !
+
+Pour créer une variable avec Sass il suffit de préfixer le nom de la variable avec le caractère "$".
+
+```scss
+$couleurPrincipale: #FF0000;
+
+p {
+border: 2px solid $couleurPrincipale;
+}
+
+p strong {
+background-color: $couleurPrincipale;
+}
+```
+
+Ainsi si je veux changer le style de mon site dans le futur. Changer uniquement la variable $couleurPrincipale change l'apparence globale sans avoir besoin de modifier la valeur de la couleur partout dans le fichier !
+
+Mais on peut encore simplifier le code ci-dessus en réarrangeant la hiérarchie comme dans du code HTML. Ici on veut que les balises strong imbriquées dans un paragraphe aient un fond rouge. Et bien imbriquons alors la règle directement à l'intérieur de la règle sur la balise p !
+
+```scss
+$couleurPrincipale: #FF0000;
+
+p {
+border: 2px solid $couleurPrincipale;
+
+strong {
+background-color: $couleurPrincipale;
+}
+}
+```
+
+Le résultat est exactement le même que précédemment, mais il est beaucoup plus lisible ! On peut imbriquer des règles dans d'autres plusieurs fois sans problème ! Sass s'occupe de produire un CSS correct correspondant à nos règles !
+
+Voici un autre exemple:
+
+
+
+See the Pen [KvNZVr](https://codepen.io/Lheau/pen/KvNZVr/) by Morgan ([@Lheau](https://codepen.io/Lheau)) on [CodePen](https://codepen.io).
+
+
+
+
+
+Et après la conversion en css, on aura ce fichier :
+
+```css
+div {
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: column;
+width: 80vmin;
+height: 80vmin;
+border: 4px solid #FF0000; }
+div div {
+width: 30%;
+height: 30%;
+border: 2px solid #0000FF; }
+```
+
+
+
+### L'auto-référence
+
+
+
+Il est possible pour une règle de se référencer elle même pour ajouter des spécifications comme des pseudo-classes ou des classes sans avoir besoin de sortir de la hiérarchie.
+
+Il suffit pour cela d'utiliser l'opérateur "&".
+
+En reprenant l'exemple précédent:
+
+
+
+See the Pen [WEoMbV](https://codepen.io/Lheau/pen/WEoMbV/) by Morgan ([@Lheau](https://codepen.io/Lheau)) on [CodePen](https://codepen.io).
+
+
+
+
+
+
+
+### Du gain de temps avec les mixins
+
+
+
+Les mixins sont des groupes de propriétés que l'on peut appliquer à n'importe quelle règle.
+
+Ils permettent de réutiliser des morceaux de code, mais aussi de changer les propriétés en fonction de paramètres passés au mixin.
+
+Dans l'exemple précédent, je centre le contenu des divs avec flexbox. Pourquoi ne pas créer un mixin pour centrer horizontalement et verticalement la cible de n'importe quelle règle ?
+
+```scss
+@mixin flex-center() {
+display: flex;
+justify-content: center;
+align-items: center;
+}
+```
+
+J'aimerais aussi pouvoir créer une bordure facilement mais en choisissant ma couleur.
+
+```scss
+@mixin big-border($color) {
+border: 4px solid $color;
+}
+```
+
+Il suffit ensuite d'utiliser la directive @include pour utiliser les mixins dans n'importe quelle règle.
+
+
+
+See the Pen [MvbQpe](https://codepen.io/Lheau/pen/MvbQpe/) by Morgan ([@Lheau](https://codepen.io/Lheau)) on [CodePen](https://codepen.io).
+
+
+
+
+
+
+
+### L'héritage
+
+
+
+Digne des plus grands langages orienté objet, une règle peut hériter d'une autre pour en récupérer toutes ses propriétés.
+
+
+
+See the Pen [VzmQQE](https://codepen.io/Lheau/pen/VzmQQE/) by Morgan ([@Lheau](https://codepen.io/Lheau)) on [CodePen](https://codepen.io).
+
+
+
+
+
+
+
+### Les maths
+
+
+
+Avec Sass on peut sans problème effectuer des calculs directement dans la feuille de style !
+
+Les opérateurs classiques fonctionnent ensemble et s'associe très bien avec les pourcentages par exemple !
+
+```scss
+$taille-reference: 400px;
+$taille-bordure: 3px;
+
+.bloc1 {
+width: ($taille-reference/4) - $taille-bordure;
+}
+
+.bloc2 {
+width: 100px/$taille-reference * 100% ;
+}
+```
+
+
+
+### Des petites fonctions utiles
+
+
+
+Sass possède de [nombreuses fonctions](http://sass-lang.com/documentation/Sass/Script/Functions.html) utilisables pour nous simplifier encore plus la vie. En voici quelques-unes que j'ai eu l'occasion d'utiliser.
+
+`lighten($color, $amount)` : Rend une couleur plus claire d'un certain pourcentage.
+
+`darken($color, $amount)` : Rend une couleur plus sombre d'un certain pourcentage.
+
+`ceil($number)` : Arrondit à l'entier supérieur.
+
+`rgba($red, $green, $blue, $alpha)` : Renvoie une couleur à partir des 4 composantes. (Il me semble que cette fonction existe aussi en CSS3).
+
+
+
+### Pour aller plus loin
+
+
+
+Comme d'habitude, le site officiel est bien fourni avec son [guide pour débuter](http://sass-lang.com/guide) et sa [documentation](http://sass-lang.com/documentation/file.SASS_REFERENCE.html).

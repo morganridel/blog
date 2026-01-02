@@ -1,0 +1,126 @@
+---
+title: Le pouvoir des APIs
+author: Morgan Ridel
+date: 2017-06-21
+hero: /static/images/api.png
+---
+
+
+Depuis quelque temps, je suis le cours "[Complete Web Developer course](https://www.udemy.com/the-complete-web-developer-course-2/)" de Rob Percival sur Udemy avec lequel j'apprends le développement Web. Je suis en ce moment dans la partie qui explique comment utiliser quelques APIs et leurs avantages. Je voulais donc partager avec vous ce que j'ai appris jusqu'ici.
+
+
+
+## Une API c'est quoi ?
+
+
+
+L'acronyme API désigne "_Application Programming Interface" _que l'on peut traduire par_ "Interface de programmation applicative"_. Le terme interface signifie que l'API va servir d'intermédiaire entre votre site/application et un service tiers fourni par quelqu'un d'autre. Vous pouvez profiter de systèmes complexes déjà codés et les introduire dans votre travail de manière relativement simplifiée et **sans avoir à élaborer votre propre système** !
+
+On vous fournit donc un accès à un service à travers un ensemble délimité de fonctions, classes etc... et (je l'espère pour vous) une documentation sur la façon d'utiliser ces outils. C'est le même principe que d'utiliser une bibliothèque tierce. Le fonctionnement interne est masqué, et vous utilisez des fonctions en sachant seulement ce qu'elles prennent en entrée et ce qu'elle sortent (principe [boite noire](https://fr.wikipedia.org/wiki/Bo%C3%AEte_noire_(syst%C3%A8me))).
+
+![](https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Blackbox.svg/2000px-Blackbox.svg.png)
+
+Ainsi il existe énormément d'API sur le marché. Beaucoup de gros sites que vous connaissez déjà ont une API à disposition des développeurs. On peut citer Google Maps, Twitter, Facebook... Mais il existe aussi d'autres API plus modestes qui offrent des services qui peuvent s'avérer très utile.
+
+Dans cet article, je vais vous présenter quelques APIs, dont celles sur lesquelles j'apprends moi-même en ce moment.
+
+
+
+## Comment utiliser une API ?
+
+
+
+Les quelques APIs que j'ai pu utiliser pour l'instant fonctionnaient plus ou moins selon le même principe. Vous vous faites générer une clé personnelle sur le site de l'API, puis vous pouvez appeler ses services dans votre code grâce à cette clé.
+
+En général, vous pouvez récupérer des données grâce à un lien contenant des paramètres tel que les données que vous souhaitez et votre clé (paramètres envoyés par GET dans le lien). Vous obtenez alors en retour un objet contenant les données demandées, encodé en JSON ou en XML (dans les APIs que j'ai utilisées jusqu'ici).
+
+Une autre possibilité est d'inclure un script Javascript qui va vous fournir ensuite de nombreuses classes et méthodes pour faire ce que vous voulez, c'est le cas de Google Maps.
+
+La plupart des APIs sont utilisable **gratuitement dans une certaine limite.** Vous pouvez avoir un nombre de requêtes limité par jour par exemple et devoir payer pour dépasser cette limite. Cela vous laisse libre de tester et d'apprendre les fonctionnalités de l'API. Vous pourrez ensuite payer si votre application devient populaire pour supprimer la limite.
+
+L'API peut aussi être limitée en fonctionnalités, laissant certaines requêtes en accès gratuit mais en vous faisant payer les services avancés. L'API de OpenWeatherMap que je vais vous présenter, fonctionne de cette façon.
+
+![](https://upload.wikimedia.org/wikipedia/commons/1/15/OpenWeatherMap_logo.png)
+
+
+
+## OpenWeatherMap API
+
+
+
+
+
+[OpenWeatherMap](https://openweathermap.org/) propose une API permettant d'obtenir des données météo de manière très simple. Vous pouvez obtenir beaucoup de **données sur le temps actuel** n'importe où dans le monde, mais aussi les prévisions à plusieurs jours, mais aussi les données sur la météo dans le passé (fonctionnalité payante).
+
+Pour ma part j'ai simplement utilisé les données sur le temps actuel. Le site déclare pouvoir obtenir le temps dans plus de 200 000 villes du monde.
+
+Son utilisation est très simple, les données du temps actuel dans une ville (ici Rouen) sont récupérables avec ce lien: [http://api.openweathermap.org/data/2.5/weather?q=Rouen&appid=VOTRE_CLE](http://api.openweathermap.org/data/2.5/weather?q=Rouen&appid=VOTRE_CLE)
+
+Il suffit de remplacer "VOTRE_CLE" par la clé que vous avez obtenu à l'inscription sur le site. Vous pouvez récupérer ensuite les données dans votre code, au format JSON par défaut sous cette forme:
+
+![](http://morganridel.fr/wp-content/uploads/2017/06/apiOWMRouen.png)
+
+Toutes les informations présentes sur cette image sont donc utilisables individuellement de la façon dont vous le souhaitez dans votre code. Vous pouvez décider de faire une application qui demande à l'utilisateur d'entrer le nom d'une ville, vous incluez ce nom dans le lien vers l'API, puis la météo actuelle sera affiché de la façon que vous voulez. **Vous avez les données, libre à vous de faire un design qui vous plaît pour les utiliser**.
+
+![](http://morganridel.fr/wp-content/uploads/2017/06/google-maps-1797882_1280.png)
+
+
+
+## Google Map API
+
+
+
+Cet API est beaucoup plus massive que la précédente, je suis en train d'apprendre quelques unes de ses fonctionnalités actuellement, mais cela consiste surtout à me baser sur des exemples pour les adapter à mes propres désirs. Google nous propose une API  avec beaucoup de classes et je vous invite à vous rendre vous-même sur [la documentation](https://developers.google.com/maps/?hl=fr) si vous voulez en apprendre plus. Je ferais sûrement un autre article sur une utilisation de cette API quand j'aurai travaillé un peu plus dessus !
+
+Observons l'exemple simple proposé sur le site pour voir un peu comment cela fonctionne:
+
+```html
+`<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple Map</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <script>
+      var map;
+      function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+          center: {lat: -34.397, lng: 150.644},
+          zoom: 8
+        });
+      }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script>
+  </body>
+</html>`
+```
+
+On peut voir le dernier script appelle l'API avec la clé et à un paramètre callback=initMap. La fonction initMap déclarée plus haut va donc être appelé juste après le chargement du script.
+
+Ici le but est simplement d'afficher une map. On créer donc un objet google.maps.Map qu'on associe au div d'id "map". Tous les paramètres de la map créée sont décidés à l'appel du constructeur. On peut choisir le point d'affichage de la map à sa création en spécifiant sa latitude et sa longitude ainsi que le niveau de zoom.
+
+À partir de là, on peut faire beaucoup d'autre choses ! Changer le comportement de la map en fonction des actions de l'utilisateur. On peut imaginer qu'il rentre une adresse et que la map se centre dessus. Ou qu'il puisse rentrer lui même la latitude et la longitude. L'API permet également de placer des pointeurs, ou de calculer des itinéraires...
+
+
+
+## Explorez !
+
+
+
+Ce que je vous présente ici n'est que la base de l'utilisation des APIs. Je suis en train de découvrir moi-même comment profiter des outils que nous fournissent les APIs et voulait partager avec vous ce que j'apprends. Il existe énormément d'API et je vous conseille de chercher si vous souhaitez en utiliser une. Il y a de grandes chances qu'il en existe une qui vous sera utile et vous fera **gagner énormément de temps.**

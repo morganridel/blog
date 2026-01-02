@@ -1,0 +1,134 @@
+---
+title: Faire des animations en CSS3
+author: Morgan Ridel
+date: 2017-07-19
+hero: /static/images/film-reel-147631_1280.jpg
+---
+
+Jusqu'à il y a quelques jours, je n'avais jamais eu l'occasion de me pencher sur les animations en CSS. J'avais l'habitude d'utiliser la fonctione animate de jQuery pour réaliser les quelques animations dont j'avais besoin. Mais dans le cadre de l'[utilisation de Ionic](http://morganridel.fr/mon-projet-de-lete-une-application-hybride-pour-un-professionnel/), je n'ai pas pu utiliser jQuery et je me suis donc penché sur les animations réalisables en CSS3.
+
+
+
+## L'utilisation des keyframes
+
+
+
+Pour définir une animation dans la feuille de style, il faut utilise la règle @keyframes. On peut alors indiquer toutes les propriétés visuelles de notre animation.
+
+```
+@keyframes my-animation {
+  from {
+    background-color: blue;
+  }
+  to {
+    background-color: red;
+  }
+}`
+```
+
+Ici on a donc crée une animation nommée "my-animation" qui commence par une couleur de fond bleu et finit avec une couleur de fond rouge. Les mots-clés "from" et "to" sont des alias de "0%" et "100%", il est donc possible de préciser beaucoup plus d'états intermédiaires dans notre animation.
+
+```css
+@keyframes my-animation {
+  0% {
+    background-color: blue;
+  }
+  25% {
+    background-color: green;
+  }
+  50% {
+    background-color: yellow;
+  }
+  75% {
+    background-color: pink;
+  }
+  100% {
+    background-color: red;
+  }
+}`
+```
+
+
+
+## Utiliser la propriété animation
+
+
+
+Maintenant que notre animation est créée visuellement, il nous faut l'ajouter à un élément et la configurer pour qu'elle nous convienne. Pour cela j'ai décidé de garder l'animation précédente de changement de couleur et de créer une classe correspondante. Ainsi chaque élément auquel je donne la classe possédera l'animation.
+
+
+```css
+.my-animation {
+  animation-name: my-animation;
+  animation-duration: 4s;
+  animation-iteration-count: infinite;
+}`
+```
+
+La propriété "animation-name" permet de définir à quelle animation (définie @keyframes) je fais référence. "animation-duration" détermine la durée.
+
+Par défaut, un élément retourne dans son état initial (avant le début de l'animation) une fois l'animation terminée. "animation-iteration-count" définit le nombre de répétitions de l'animation. J'ai ici choisi infinite pour que vous puissiez voir les animations sans avoir besoin de réactualiser la page.
+
+En appliquant la classe my-animation à un carré de fond bleu que j'ai créée, on obtient alors le résultat suivant:
+
+
+
+See the Pen [css3-animation-base](https://codepen.io/Lheau/pen/OgGbKv/) by Morgan ([@Lheau](https://codepen.io/Lheau)) on [CodePen](https://codepen.io).
+
+
+
+
+On peut facilement multiplier les propriétés de l'animation pour en créer une plus complexe !
+
+
+
+See the Pen [css3-animation-complex](https://codepen.io/Lheau/pen/WOWRaV/) by Morgan ([@Lheau](https://codepen.io/Lheau)) on [CodePen](https://codepen.io).
+
+
+
+
+
+Il existe plusieurs autres propriétés permettant de paramétrer le déroulement de l'animation.
+
+```css
+.my-animation {
+  animation-name: my-animation; /* Nom de l'animation */
+  animation-duration: 4s; /* durée de l'animation */
+  animation-delay: 2s; /* Temps avant commencement de l'animation (la première fois seulement) */
+  animation-direction: alternate; /* L'animation inverse est également effectuée */
+  animation-fill-mode: forwards; /* L'élément conserve les propriétés de fin de l'animation */
+  animation-iteration-count: infinite; /* L'animation se répète indéfiniment */
+}`
+```
+
+
+
+See the Pen [css3-animation-complex2](https://codepen.io/Lheau/pen/MoRJMe/) by Morgan ([@Lheau](https://codepen.io/Lheau)) on [CodePen](https://codepen.io).
+
+
+
+
+
+En plus de pourcentages des keyframes, on peut donner un "style" de vitesse d'animation à l'aide de la propriété "animation-timing-function" qui peut prendre les valeurs suivantes:
+
+```css
+animation-timing-function: ease;
+animation-timing-function: ease-in;
+animation-timing-function: ease-out;
+animation-timing-function: ease-in-out;
+animation-timing-function: linear;
+animation-timing-function: step-start;
+animation-timing-function: step-end;`
+```
+
+Voici un petit exemple pour voir visuellement la différence de vitesse entre les différents timings:
+
+
+
+See the Pen [css3-animation-timing-fuction](https://codepen.io/Lheau/pen/BZEWLB/) by Morgan ([@Lheau](https://codepen.io/Lheau)) on [CodePen](https://codepen.io).
+
+
+
+
+
+A l'aide tous ces paramètres, il est possible de créer des animations assez précises uniquement via le CSS. Cela peut éviter d'alourdir inutilement une page avec du script ou de faire quelques animations simples.

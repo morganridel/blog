@@ -1,0 +1,165 @@
+---
+title: Générer des couleurs aléatoires en JavaScript
+author: Morgan Ridel
+date: 2017-07-05
+hero: /static/images/color-198892_1280.jpg
+---
+
+
+JavaScript permet bien des choses ! Mais de base, il ne vous permettra pas de générer une couleur aléatoire que vous pourrez utiliser pour les éléments d'un jeu ou le fond d'un div. Ayant déjà été confronté à ce problème j'ai cherché des solutions afin de pouvoir facilement en obtenir une. Aujourd'hui, je vais partager avec vous 3 méthodes que j'ai trouvées et vous les expliquer tout en énonçant leurs avantages et inconvénients.
+
+
+## En une ligne, la méthode des bourrins
+
+
+
+Si vous n'avez pas de temps à perdre et que vous avez besoin d'une couleur aléatoire tout de suite, il vous suffit de placer l'expression suivante à l'endroit où vous voulez votre couleur:
+
+```javascript
+'#'+(Math.random()*0xFFFFFF<<0).toString(16)
+```
+
+Décomposons ensemble l'expression afin de la comprendre en détail:
+
+
+
+
+```javascript
+0xFFFFFF
+```
+Cela représente le plus gros nombre possible en hexadécimal sur le modèle RGB (24 bits pour 3 octets représentant chacun une "quantité" de couleur). Si vous avez des difficultés avec la représentation des couleurs en hexadécimal je vous invite à lire [mon article](../comprendre-le-codage-des-couleurs-en-informatique) dessus.
+
+```javascript
+ Math.random()*0xFFFFFF
+```
+Math.random() retourne un float entre 0 et 1. Le multiplier par l’hexadécimal (qui va être converti en base 10 pour la multiplication) va donc donner un nombre aléatoire dans l'ensemble des valeurs possibles entre 0 et le plus gros nombre représentant une couleur en hexadécimal.
+
+```javascript
+Math.random()*0xFFFFFF<<0
+```
+<< est l'opérateur de décalage binaire à gauche. On demande donc de décaler le nombre précédent de 0 bit vers la gauche. Inutile ? L'astuce est que décaler de 0 bits en JavaScript aura pour effet de tronquer le nombre, lui retirant ainsi sa partie décimale.
+
+```javascript
+(Math.random()*0xFFFFFF<<0).toString(16))
+```
+
+`toString(16)` est une méthode permettant de convertir le nombre précédent en base 16 (hexadécimale).
+
+```javascript
+'#'+(Math.random()*0xFFFFFF<<0).toString(16))
+```
+Finalement, plus qu'à rajouter un "#" devant la représentation hexadécimale pour correspondre au format d'une couleur !
+
+
+
+Voyons les couleurs qu'on peut obtenir en utilisant le code suivant:
+
+```markup
+  <div class="randomColor"></div>
+  <div class="randomColor"></div>
+  <div class="randomColor"></div>
+  <div class="randomColor"></div>
+  <div class="randomColor"></div>
+
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <script type="text/javascript">
+    //Pour chaque div de classe randomColor
+    $(".randomColor").each(function() {
+      //On change la couleur de fond au hasard
+      $(this).css("background-color", '#'+(Math.random()*0xFFFFFF<<0).toString(16));
+    })
+  </script>`
+```
+
+![Couleurs aléatoire en un ligne Javascript](/static/images/colorsimple.png)
+
+On obtient donc bien des couleurs aléatoires générées en une ligne de JavaScript.
+
+Avantages :
+
+* Rapide à mettre en place (un copier-coller)
+* Pratique pour faire des tests
+
+Inconvénients :
+
+* Pas très lisible
+* Difficile à maintenir (pas de fonction)
+* Peut générer des couleurs invalides si le nombre random est trop petit !
+
+
+
+## La méthode efficace, créer une fonction
+
+
+
+Si l'on souhaite pouvoir générer nos couleurs de façon récurrente tout en augmentant la lisibilité de notre code, rien de mieux qu'utiliser une fonction !
+
+```javascript
+function getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
+```
+
+Cette fois le code est assez lisible. On part d'un "#" auquel on ajoute 6 fois un chiffre (en représentation hexadécimale) aléatoire. Le Math.floor() arrondi à l'inférieur pour s'assurer d'avoir un nombre entier. Le résultat obtenu est de la forme #XXXXXX avec X un caractère au hasard de letters.
+
+![](/static/images/colorfunction.png)
+
+Avantages :
+
+* Réutilisable
+* Lisible
+
+Inconvénients :
+
+* La répartition des couleurs dans l'espace RGB est telle qu'il ne suffit pas de prendre des lettres au hasard en hexadécimal pour avoir autant de chance d'avoir du rouge clair ou du rouge foncé. Ce n'est pas de l'aléatoire au sens propre du terme. Il semble qu'il y ai plus de chance de tomber sur une couleur sombre avec cette méthode (pour la première aussi donc).
+
+
+
+## La méthode extrême, télécharger un script
+
+
+
+Si vous voulez une méthode beaucoup plus poussée que les 2 précédentes, j'ai trouvé [ce script](https://github.com/davidmerfield/randomColor) sur GitHub qui fournit une fonction randomColor([options]) qui laisse plus de choix dans la génération de couleurs. Le script utilise la [représentation HSV](https://fr.wikipedia.org/wiki/Teinte_Saturation_Valeur) pour générer des couleurs, ce qui permet de contrôler le niveau de luminosité et de saturation.
+
+Cependant si vous avez besoin d'une couleur aléatoire pour quelque chose de simple, vous n'avez peut-être pas besoin de télécharger un script qui peut alourdir votre projet (Ici il est très léger mais bon) alors que vous pourriez facilement générer votre couleur aléatoire vous-même comme les méthodes précédentes en vous renseignant sur la représentation HSV.
+
+La fonction randomColor() peut prendre en paramètre un objet représentant les options des couleurs générées. On peut décider de la teinte ou de la luminosité de la couleur par exemple.
+
+Voici quelques exemples que j'ai générés:
+```javascript
+randomColor()
+```
+![](/static/images/colorscript1.png)
+```javascript
+randomColor({hue:'red'})
+```
+![](/static/images/couleurscript2.png)
+```javascript
+randomColor({hue: 'blue', luminosity: 'bright'}
+```
+![](/static/images/couleurscript3.png)
+
+On peut donc obtenir de belles couleurs selon les paramètres choisis !
+
+Avantages :
+
+* Complet
+* Facile d'utilisation
+
+Inconvénients :
+
+* Solution type "Tuer une mouche avec un tank" pour certaines situations
+
+
+
+### Source
+
+
+
+Les 2 premières méthodes ont été trouvées sur [Stack Overflow](https://stackoverflow.com/questions/1484506/random-color-generator).

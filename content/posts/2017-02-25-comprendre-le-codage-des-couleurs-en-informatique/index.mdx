@@ -1,0 +1,53 @@
+---
+title: Comprendre le codage des couleurs en informatique
+author: Morgan Ridel
+date: 2017-02-25
+hero: /static/images/rvb-e1498057938212.png
+---
+
+Indispensables pour créer un design vivant ou pour attirer l’œil, les couleurs sont présentes sur pratiquement tous les éléments numériques de votre quotidien: site web, logiciels, images... Savoir comment elles sont représentées en informatique est relativement simple. De plus, cela se révélera utile dès que vous aurez besoin d'utiliser des outils de retouches graphiques que cela soit Paint ou Photoshop par exemple. Finalement, les couleurs sont indissociables de la réalisation d'un site web avec un peu de style. Dans cet article, nous allons étudier le codage RGB et sa représentation hexadécimale.
+
+
+## Est-ce que j'ai vraiment besoin de savoir ça ?
+
+
+À dire vrai, on peut très bien se passer de comprendre le codage des couleurs. Aujourd'hui, les logiciels de graphisme nous proposent de jolies interfaces toutes faites pour choisir la couleur qui vous convient le mieux. (voir ci-dessous). Cependant, cela reste bon à savoir et en plus ce n'est pas particulièrement difficile à assimiler.
+
+![](/static/images/cerclecouleur.png)
+
+Même si vous voulez mettre de la couleur dans vos pages web en HTML/CSS, vous avez à votre disposition [une liste de 140 couleurs](https://www.w3schools.com/colors/colors_names.asp) portant toutes un nom et prêtes à être utilisées sur votre site ! Mais comment faire alors si vous voulez recréer votre <span style="background-color: #048b9a;">bleu canard</span> ou votre <span style="background-color: #fef86c;">jaune mimosa</span> favori ? Pour cela, découvrons le codage RGB !
+
+
+## Créer des couleurs par mélange avec le codage RGB
+
+
+![](/static/images/rvb.png)
+
+Le codage RGB (<span style="color: red;">Red</span> <span style="color: green;">Green</span> <span style="color: blue;">Blue</span>) ou RVB (<span style="color: red;">Rouge</span> <span style="color: green;">Vert</span> <span style="color: blue;">Bleu</span>) en français est un codage qui utilise la synthèse additive pour générer une couleur. Le principe consiste à additionner une certaine quantité de 3 couleurs dites primaires: le rouge, le vert et le bleu. A partir des ces 3 couleurs, on peut alors créer à peu près toutes les couleurs dont on a besoin. La quantité de chaque couleur est représentée par un nombre entre 0 (couleur non présente) et 255 (maximum). On peut alors stocker cette quantité sur la valeur très pratique en informatique d'un octet (256 valeurs possibles) et par conséquent obtenir une couleur avec 3 octets.
+
+256 valeurs possibles par couleur primaire, ça ne fait pas moins de <span id="cwos" class="cwcot">16 777 216</span> couleurs différentes (+ de 16 millions). Et la différence de nuance entre deux couleurs variants de 1 ou 2 en quantité n'est pas discernable à l’œil nu. Autant dire que vous devriez y trouver votre compte.
+
+Observons quelque exemple de couleurs obtenues avec ce codage:
+
+* <span style="color: #ff0000;">R: 255</span> <span style="color: #008000;">G: 0</span> <span style="color: #0000ff;">B: 0 </span>donne sans grande surprise un <span style="color: #ff0000;">rouge éclatant</span>.
+* <span style="color: #ff0000;">R: 255</span> <span style="color: #008000;">G: 255</span> <span style="color: #0000ff;">B: 255 </span>donne la couleur blanche, représentant la lumière.
+* <span style="color: #ff0000;">R: 0</span> <span style="color: #008000;">G: 0</span> <span style="color: #0000ff;">B: 0</span> à l'inverse donne du <span style="color: #000000;">noir</span>, une absence de couleur.
+* <span style="color: #ff0000;">R: 255</span> <span style="color: #008000;">G: 0</span> <span style="color: #0000ff;">B: 255 </span>On mélange du rouge et du bleu pour obtenir un <span style="color: #ff00ff;"> magenta</span>.
+* <span style="color: #ff0000;">R: 254</span> <span style="color: #008000;">G: 248</span> <span style="color: #0000ff;">B: 108 </span>permet de retrouver notre fameux <span style="color: #fef86c;">jaune mimosa</span>.
+
+Je vous laisse expérimenter par vous-même, essayez par exemple de retrouver le <span style="background-color: #048b9a;">bleu canard</span> que j'ai montré plus haut.
+
+Nous pouvons donc représenter presque toutes les couleurs avec cette méthode. Le problème est que nous somme obligé de préciser 3 valeurs différentes... Heureusement, il existe un moyen d'écrire directement n'importe quelle couleur RGB en une seule et même valeur.
+
+
+## La représentation hexadécimale
+
+Nous avons vu plus haut que la quantité de chacune des couleurs primaires pouvait prendre 256 valeurs, et est stockée sur un octet (composé de 8 bits). Un chiffre en hexadécimal représente 4 bits, soit la moitié d'un octet. Avec 2 chiffres hexadécimaux on peut alors représenter un octet et donc une de nos quantités de couleur primaire. La représentation hexadécimale consiste à réunir les 3 quantités en une notation sous la forme suivante: #<span style="color: #ff0000;">RR</span><span style="color: #008000;">GG</span><span style="color: #0000ff;">BB</span> <span style="color: #333333;">(6 chiffres hexadécimaux)</span>.
+Un chiffre hexadécimal peut-être représenté par 16 valeurs différentes: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E, F.
+Avec 2 chiffres, on retrouve bien 16\*16 = 256 valeurs ! Pour retrouver simplement la valeur d'un nombre hexadécimal à 2 chiffres XY il suffit d'appliquer la formule suivante: Y\*16<sup>0</sup> + X*16<sup>1</sup> <strong> = Y + X\*16 </strong> en prenant X et Y en base 10 c'est à dire que A en hexadécimal donne 10 en base 10 et F donne 15.
+
+
+Ainsi, par exemple F2 donne en quantité : 2 + 15*16 = 242
+Le jaune mimosa (<span style="color: #ff0000;">R: 254</span> <span style="color: #008000;">G: 248</span> <span style="color: #0000ff;">B: 108</span><strong>)</strong> peut ainsi être représenté: <span style="background-color: #fef86c;">#FEF86C</span>
+
+Avec tout ça, vous avez désormais les bases pour comprendre la prochaine couleur que vous rencontrerez dans ce codage. Vous pouvez également vous renseigner sur l'hexadécimal en général si cela vous intéresse, qui est aussi beaucoup utilisé en informatique.

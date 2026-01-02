@@ -1,0 +1,115 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+@import "./utilities.css";
+
+@layer base {
+
+    /* 
+    https://wiki.csswg.org/ideas/mistakes
+    "Box-sizing should be border-box by default. 
+    This is done by Tailwind preflight already
+    */
+    /* 
+    {
+        box-sizing: border-box;
+    }
+    */
+
+    * {
+        /* I decide not to break for now */
+        /* overflow-wrap: break-word; */
+    }
+
+
+    /* Some global styles for my theme --------------------------------------------------- */
+    /* Warning: this will ot be applied to prose as prose style is on the utility layer */
+    p a {
+        @apply text-accent underline
+    }
+
+
+    /* ---------------------------------------------------- */
+
+}
+
+@layer components {}
+
+@utility flow-xs {
+    --flow-space: var(--spacing-xs);
+}
+
+@utility flow-sm {
+    --flow-space: var(--spacing-sm);
+}
+
+@utility flow-md {
+    --flow-space: var(--spacing-md);
+}
+
+@utility flow-lg {
+    --flow-space: var(--spacing-lg);
+}
+
+@utility flow-xl {
+    --flow-space: var(--spacing-xl);
+}
+
+@theme static {
+    --ratio: 1.61803398875;
+    /* Golden ratio */
+    --measure: 80ch;
+
+    /* Spacing scale (eventually move to clamps/utopia/gridless if needed to avoid breakpoint) */
+    --spacing-xs: calc(var(--spacing-sm) / var(--ratio));
+    --spacing-sm: calc(var(--spacing-md) / var(--ratio));
+    --spacing-md: 1rem;
+    --spacing-lg: calc(var(--spacing-md) * var(--ratio));
+    --spacing-xl: calc(var(--spacing-lg) * var(--ratio));
+    --spacing-xxl: calc(var(--spacing-xl) * var(--ratio));
+
+    --border-width-sm: 1px;
+    --border-width-md: 3px;
+    --border-width-xl: 6px;
+
+    /* color palette */
+    --color-primary: var(--color-amber-50);
+    --color-secondary: var(--color-violet-600);
+    --color-accent: var(--color-amber-500);
+    /* good for backgrounds */
+    --color-neutral: var(--color-stone-50);
+
+    --color-success: var(--color-emerald-700);
+    --color-warning: var(--color-yellow-600);
+    --color-error: var(--color-orange-700);
+    /* text-stone-900 for text? */
+
+    --color-base: var(--color-stone-700);
+    --color-muted-foreground: var(--color-stone-500);
+    --color-muted-background: var(--color-stone-200);
+
+    /* typorgaphy scale (eventually move to clamps/utopia/gridless if needed to avoid breakpoint) */
+    --font-size-sm: 0.875rem;
+    /* 14px */
+    --font-size-base: 1rem;
+    /* 16px */
+    --font-size-lg: 1.25rem;
+    /* 20px */
+    --font-size-xl: 1.5rem;
+    /* 24px */
+    --font-size-2xl: 2rem;
+    /* 32px */
+    --font-size-3xl: 2.5rem;
+    /* 40px */
+
+    /* BORDER RADIUS */
+    --radius-sm: 0.25rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 1rem;
+
+
+}
+
+@utility prose-custom {
+    @apply prose prose-img:mx-auto;
+    --tw-prose-links: var(--color-accent);
+}

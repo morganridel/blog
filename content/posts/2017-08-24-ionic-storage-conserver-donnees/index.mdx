@@ -1,0 +1,162 @@
+---
+title: "Ionic Storage : Stocker des données"
+permalink: /ionic-storage-stocker-des-donnees
+author: Morgan Ridel
+date: 2017-08-24
+hero: /static/images/barrel-373040_1280.jpg
+---
+
+
+Lorsque l'on [crée une application](../mon-projet-de-lete-une-application-hybride-pour-un-professionnel/), on peut avoir besoin de stocker une ou plusieurs variables pour les retrouver plus tard. Et c'est exactement l'idée derrière Ionic Storage !
+
+Conserver le meilleur score du joueur, ses préférences, sa progression... Ionic Storage va utiliser le moyen le plus adapté pour stocker les données en fonction de la plate-forme de votre application. Pas besoin de se soucier du moyen de stockage, il suffit d'apprendre les quelques méthodes de ce service pour stocker tout ce que l'on désire !
+
+
+
+## Importer et utiliser Ionic Storage dans son application
+
+
+
+Le package Storage est installé par défaut dans les applications Ionic 2. L'utilisation est très bien décrite dans [la doc officielle](https://ionicframework.com/docs/storage/). Mais je vais écrire ici un petit guide d'utilisation rapide.
+
+1) Importer Storage dans un fichier module de votre application
+
+```typescript
+//import...
+import { IonicStorageModule } from '@ionic/storage';
+
+@NgModule({
+declarations: [
+//...
+],
+imports: [
+BrowserModule,
+IonicModule.forRoot(MyApp),
+IonicStorageModule.forRoot()
+],
+//...
+```
+
+2) Importer le dans le component où vous souhaitez l'utiliser et n'oublier pas de l'injecter dans le constructeur.
+
+```typescript
+import { Component } from '@angular/core';
+import { NavController } from 'ionic-angular';
+import { Storage } from '@ionic/storage';
+
+@Component({
+//...
+})
+export class HomePage {
+
+constructor(private storage: Storage, public navCtrl: NavController) {
+
+}
+
+}
+```
+
+3) Utiliser les méthodes de stockage appropriées. Les deux les plus utilisées sont :
+
+```typescript
+storage.set('nomVariable', 'valeur');
+```
+
+Elle permet de stocker une valeur dans la base de données.
+
+```typescript
+storage.get('nomVariable').then((valeur) => {
+console.log('Ma variable contient ', valeur);
+});
+```
+
+Pour récupérer et utiliser une valeur de la base de données.
+
+Voici un exemple que j'ai mis en place :
+
+```typescript
+import { Component } from '@angular/core';
+import { NavController } from 'ionic-angular';
+import { Storage } from '@ionic/storage';
+
+@Component({
+selector: 'page-home',
+templateUrl: 'home.html'
+})
+export class HomePage {
+
+compteurVue : number = 0;
+
+constructor(private storage: Storage, public navCtrl: NavController) {
+
+}
+
+ngOnInit() {
+this.storage.get('nbVues').then((val) => {
+if (!(val == null)) {
+this.storage.set('nbVues', val+1);
+}
+else {
+this.storage.set('nbVues', 1);
+}
+});
+}
+
+ngAfterViewInit() {
+this.storage.get('nbVues').then((val) => {
+this.compteurVue = val;
+});
+}
+
+}
+```
+
+Et le template HTML qui correspond :
+
+```html
+  
+...
+
+<p>Cette page a été vue {{ compteurVue }} fois !!</p>
+
+```
+
+Ce code permet de compter le nombre de fois ou la page d'accueil de l'application à été chargée.
+
+![](/static/images/Capture.png)
+
+
+
+## Gérer les données stockées quand on teste l'application
+
+
+
+En voulant utiliser Ionic Storage, j'ai été confronté à un problème lors des tests. Je voulais que l'application ai un certain comportement lorsque ma variable n'existait pas encore dans la base de données. Mais sa valeur restait enregistré des tests précédents.
+
+**Comment alors supprimer les valeurs déjà existantes dans la base de données sans passer par le code ?**
+
+Lors de tests à l'aide de la commande ionic serve avec les réglages par défaut, Ionic Storage utilise indexedDB. J'ai donc du chercher comment modifier cette base de donnée sous Firefox (le navigateur que j'utilise).
+
+Voici la marche à suivre :
+
+
+
+
+
+  1. Ouvrir les outils de développeurs (`CTRL-MAJ-I`)
+
+
+  2. Activer le panel de mémoire si il n'est pas disponible:
+![](http://morganridel.fr/wp-content/uploads/2017/08/Capture3.png)
+
+
+
+  3. Utiliser l'onglet pour modifier les valeurs voulues dans indexedDB
+![](http://morganridel.fr/wp-content/uploads/2017/08/Capture2.png)
+
+
+
+
+
+
+Voilà pour l'instant ce que j'ai eu l'occasion d'apprendre sur le stockage à "long terme" sur une application Ionic !

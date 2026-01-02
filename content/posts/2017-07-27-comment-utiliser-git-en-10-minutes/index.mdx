@@ -1,0 +1,259 @@
+---
+title: Comment utiliser Git en 10 minutes
+author: Morgan Ridel
+date: 2017-07-27
+hero: /static/images/Git-logo.jpg
+---
+
+Git est un outil formidable. Besoin de récupérer une ancienne version de votre code ? Ou de pouvoir expérimenter dessus sans prendre le risque de détruire votre travail ? Le tout sans avoir besoin de créer plusieurs copies de dossier ? Git est une solution pour résoudre tous ces problèmes et bien d'autres.
+
+Git est un logiciel de gestion de version qui va vous permettre de ne plus vous casser la tête à résoudre les problèmes de travail en collaboration et de stockage de versions.
+
+Dans cet article je vais vous expliquer comment rapidement mettre en place un projet suivi par Git et le synchroniser en ligne sur GitHub. Je ne détaillerai pas le fonctionnement interne de Git (que je ne maîtrise pas complètement) mais je ferai éventuellement un autre article expliquant d'autres fonctionnalités et précisant celles décrites dans cet article.
+
+Le but ici est de pouvoir utiliser Git de façon basique rapidement sans passer des heures à en comprendre le fonctionnement.
+
+
+
+## Installer et configurer Git
+
+
+
+Pour utiliser Git il faut d'abord l'installer sur votre ordinateur. Sous Linux, vous pouvez l'obtenir à l'aide d'un gestionnaire de paquets, sous Ubuntu par exemple :
+
+```bash
+sudo apt-get install git
+```
+
+Sous Windows, vous pouvez passer par [ce site](https://git-scm.com/downloads) pour télécharger et installer Git.
+
+Une fois installé, ouvrez un terminal, puis tapez:
+
+```bash
+git --version
+```
+
+Si git est correctement installé, vous devriez voir une ligne affichant git et son numéro de version.
+
+Parfait ! Vous devez maintenez configurer votre identité. De cette façon, si vous travaillez sur un projet avec d'autres personnes, chacun pourra voir ce que les autres ont fait.
+
+Utilisez pour cela les 2 commande suivantes pour préciser votre nom et votre email:
+
+```bash
+git config --global user.name "Votre Nom"
+```
+
+```bash
+git config --global user.email mail@domaine.com
+```
+
+Votre identité est configurée de façon "globale", cela veut dire que ces informations resteront les mêmes tant que vous utiliserez Git sur cet ordinateur. Vous pouvez cependant changer votre identité pour des projets spécifiques par exemple.
+
+Vérifiez que vos informations sont bien enregistrées:
+
+```bash
+git config user.name
+```
+
+```bash
+git config user.email
+```
+
+Ces commandes doivent vous renvoyer ce que vous avez entré précédemment.
+
+Git est maintenant configuré ! Nous pouvons passer à la création d'un projet.
+
+
+
+## Inscription et création d'un projet sur GitHub
+
+
+
+Créez-vous un compte sur [GitHub](https://github.com/) puis créez ensuite un nouveau projet (repository).
+![](/static/images/tuto-github.png)
+
+Votre repository est désormais en ligne et disponible sur GitHub publiquement (n'importe qui peut voir votre code alors n'envoyez aucune information sensible).
+
+Il est constitué d'un unique fichier README.md écrit en Markdown ! Ce fichier permet d'avoir une sorte de page de présentation de votre projet, c'est lui qui sera affiché à chaque fois que quelqu'un ouvrira la page d'accueil de votre repository.
+
+
+
+## Travailler sur le projet localement
+
+
+
+Maintenant que votre projet est disponible sur GitHub, il faut le lier à un dossier suivi par Git en local. Nous pourrions faire suivre un dossier par Git puis le lier manuellement au repository sur GitHub mais ce tutoriel à pour objectif d'être simple et rapide, nous allons donc simplement récupérer le projet sur GitHub de façon à ce que tous les liens soient faits automatiquement.
+
+Il faut tout d'abord récupérer l'adresse de votre repository, pour cela rendez-vous sur votre projet sur GitHub et cherchez le bouton "Clone or download".
+
+![](/static/images/github-clone.png)
+
+Une fois l'adresse récupérée, placez vous dans le dossier dans lequel vous voulez travailler (le dossier du projet sera téléchargé ici) dans un terminal et tapez la commande suivante (en utilisant votre adresse au lieu de la mienne):
+
+```git
+git clone https://github.com/lheau/test.git
+```
+
+Vous avez désormais accès à toutes les fonctionnalités de Git lorsque vous vous placez dans le répertoire de votre projet.
+
+Le principe est que vous pouvez travailler localement sur votre répertoire, puis, une fois que les modifications vous conviennent, les envoyer sur GitHub pour les rendre visible aux yeux du reste du monde (et à votre équipe).
+
+Pour travailler sur votre projet, il nécessaire de comprendre l'idée derrière Git. C'est un logiciel de gestion de versions, vous avez donc un "historique" de toutes les modifications depuis le début de votre projet.
+
+Cependant, Git ne va pas conserver l'intégralité des changements que vous faites sur chaque fichier. En fait, on peut considérer qu'il existe des "points de sauvegarde" qui portent le nom de **commit** dans le langage Git.
+
+Un commit représente l'état de votre projet à un moment donné. "Faire un commit" c'est valider vos dernières modifications afin de créer un nouveau point de sauvegarde.
+
+**Votre projet peut être représenté comme une suite de commits créant ainsi une timeline de son évolution.**
+
+Pour résumer il existe 3 états pour un fichier suivi par Git.
+
+
+
+
+
+  * Non modifié : Le fichier est dans le même état que depuis le dernier commit.
+
+
+  * Modifié : Le fichier à été modifié mais ses modifications ne seront pas envoyés avec le prochain commit.
+
+
+  * Indexé : Les modifications ont été validées et seront enregistrées lors du prochain commit.
+
+
+
+De plus tant qu'un fichier n'est pas explicitement suivi par Git, il ne sera dans aucun de ces 3 états. Vous devez préciser quels fichiers sont suivis (cela permet de ne pas suivre des fichiers issus de la compilation et de ne suivre que les sources par exemple).
+
+La commande magique pour être au courant de tout ces états est la suivante:
+
+```git
+git status
+```
+
+(N'oubliez pas de vous déplacer dans le dossier cloné pour que les commandes fonctionnent !)
+
+Elle vous informe si vos fichiers sont modifiés, indexés, ou prêt pour un commit.
+
+Tentez de créer un nouveau fichier dans votre dossier puis d’utiliser git status. Cela vous informera que le fichier n'est pas suivi.
+
+Pour faire suivre un fichier par git il faut utiliser la commande:
+
+```git
+git add nomDuFichier
+```
+
+Lors de votre prochain git status, Git vous informera que les changements sont prêts à être commit. C'est parce que git add, permet également de faire passer un fichier dans l'état indexé. Le fichier n'étant pas suivi auparavant, aucune modification n'a besoin d'être validée, le fait de vouloir l'ajouter suffit à l'indexer.
+
+```git
+On branch master
+Your branch is up-to-date with 'origin/master'.
+Changes to be committed:
+(use "git reset HEAD ..." to unstage)
+
+new file: fichier.txt
+```
+
+Modifiez alors le contenu du fichier pour constater la différence.
+
+```git
+On branch master
+Your branch is up-to-date with 'origin/master'.
+Changes to be committed:
+(use "git reset HEAD ..." to unstage)
+
+new file: fichier.txt
+
+Changes not staged for commit:
+(use "git add ..." to update what will be committed)
+(use "git checkout -- ..." to discard changes in working directory)
+
+modified: fichier.txt
+```
+
+Ici il n'y a pas vraiment 2 "fichier.txt", mais le git add précédent à indexé le fichier pour qu'il soit prêt à commit. Depuis le fichier à été modifié mais comme ces modifications ne sont pas indexées, si on fait un commit maintenant l'ajout du fichier sera pris en compte mais pas la dernière modification.
+
+Corrigeons cela en faisant de nouveau `git add fichier.txt` qui je le rappelle, permet à la fois de suivre de nouveaux fichiers mais aussi d'indexer des fichiers modifiés.
+
+Maintenant que nos modifications sont validées, il est enfin temps de faire un commit afin de les enregistrer !
+
+```git
+git commit -m "Creation de fichier.txt, mon premier commit !"
+```
+
+Le paramètre -m indique que l'on veut préciser le message du commit directement en ligne de commande. Un message de commit doit clairement indiquer quelle modification le commit apporte.
+
+Vos modifications sont désormais sauvegardées dans un commit. La commande git status n'indique plus aucun changement car nous somme à la dernière version.
+
+Cependant votre modification n'apparait pas encore sur le repository sur GitHub. Tous les commits que vous pourriez faire resteront locaux et bien que vous pouvez utiliser toutes les fonctionnalités de Git, si vous perdez votre dossier, vous n'avez aucun moyen de récupérer une une autre version que celle de GitHub.
+
+
+
+## Synchroniser son travail avec GitHub
+
+
+
+Il existe deux commandes importantes pour pouvoir travailler en parallèle avec votre répertoire local et celui sur GitHub: `git pull` et `git push`.
+
+En réalité vous devriez ajouter origin (alias de l'adresse de votre repository sur GitHub) et master (branche principale par défaut, nous y reviendrons dans un autre article) ce qui donnerait donc par exemple `git push origin master` mais le fait d'avoir cloné le repository de GitHub au début de ce tutoriel permet d'avoir des éléments pré-configurés et de se contenter de la commande en 2 mots.
+
+```git
+git pull
+```
+
+Cette commande est à utiliser avant de commencer tout travail en local. En effet elle permet de rapatrier le contenu du projet de GitHub à votre copie locale, récupérant ainsi les dernières modifications (qui ont pu être effectuées par quelqu'un d'autre depuis la dernière fois où vous avez travaillé). Vous êtes alors sûr de travailler sur une copie à jour réduisant ainsi les risques de conflits.
+
+```git
+git push
+```
+
+Une fois votre travail terminé, cette commande envoie tous vos derniers commits vers GitHub, permettant ainsi de mettre à jour le repository pour les prochains qui travailleront dessus et vous évitant de perdre des données. Vous pouvez ensuite récupérer le contenu du projet à partir de GitHub de n'importe quel ordinateur et continuer à travailler.
+
+
+
+## Résumé
+
+
+
+Voici un exemple d'une session de travail envisageable dans un projet utilisant Git et GitHub (dont vous possédez déjà un dossier suivi sur votre ordinateur):
+
+1) Je récupère la dernière version du projet avant de travailler dessus.
+
+```git
+git pull
+```
+
+2) Je travaille sur un ou plusieurs fichiers pour créer de nouvelles fonctionnalités ou corriger des bugs
+
+3) J'indexe les fichiers dont je veux conserver les modifications
+
+```git
+git add fichier1 fichier2..
+```
+
+4) Je commit mes changements avec un message concis et explicite.
+
+```git
+git commit -m "Mon message"
+```
+
+5) Je répète les étapes 2 à 4 autant de fois que souhaité. (Une session de travail n'est pas nécessairement composée d'un seul commit)
+
+6) Je push la dernière version de mon projet sur GitHub.
+
+```git
+git push
+```
+
+Voilà la base pour utiliser Git en stockant son repository sur GitHub. Il existe de nombreuses autres subtilités mais si vous n'avez jamais utilisé Git j'espère que cet article vous à aidé à cerner un peu son utilisation et surtout ses possibilités !
+
+**Si vous avez des remarques, questions ou que vous voulez d'autres articles sur Git, laissez un commentaire !**
+
+
+
+## Pour aller plus loin
+
+
+
+Si vous voulez comprendre tout de Git, je vous conseille fortement de lire [ce livre gratuit](https://git-scm.com/book/fr/v2).
+
+_Cet article est le premier d'une série d'articles sur Git. Pour en apprendre plus, je vous propose de lire [la partie suivante sur les branches](../les-bases-des-branches-avec-git/)._

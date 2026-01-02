@@ -1,0 +1,118 @@
+---
+title: "Clean Code : prenez soin de votre code"
+author: Morgan Ridel
+date: 2017-09-20
+hero: /static/images/10-clean-code.jpg
+---
+
+J'ai terminé il y a peu la lecture de [Clean Code](https://www.amazon.fr/Clean-Code-Handbook-Software-Craftsmanship/dp/0132350882) de Robert C. Martin et ce livre m'a ouvert les yeux sur énormément de pratiques.
+
+Cela ne fait que quelques années que j'ai re-découvert la programmation en arrivant à l'INSA. Et chaque nouvelle page de ce livre me faisait un effet similaire à "Mais oui ! C'est évident, pourquoi est-ce qu'on ne fait pas tous ça ?!". Bien sur on peut ne pas être d'accord avec tous les principes énumérés, mais je pense qu'appliquer même quelques éléments de ce livre peut avoir un impact considérable sur la qualité de notre code.
+
+
+
+## Mais c'est quoi, du "code propre" ?
+
+
+
+Au fur et à mesure de la lecture, on se rend rapidement compte de ce que doit être le "clean code" selon le livre.
+
+Le code propre est :
+
+
+
+
+
+  * **Bien écrit** : on doit pouvoir comprendre directement l'objectif du code en le lisant, sans avoir à faire de nombreux aller-retours entre les fichiers/classes
+
+
+  * **Simple** : les morceaux de codes doivent être courts et avoir un seul objectif
+
+
+  * **Peu dépendant** : On réduit au maximum les dépendances et on les gère de façon à pouvoir les changer voir les simuler (pour des tests)
+
+
+
+Pour résumer, le code propre c'est **du code dont on a pris soin**. On doit pouvoir voir que la personne qui a écrit ce code y a apporté une attention particulière, pour faciliter l'amélioration, la compréhension et le partage.
+
+Robert C. Martin évoque la métaphore de l'architecture. Il explique qu'aussi magnifique que puisse être une construction, la moindre porte qui ferme mal ou le moindre bureau mal rangé détruit le charme de l'ensemble. Cela s'applique aussi au clean code.
+
+Il part aussi du principe qu'on passe beaucoup plus de temps à lire notre code qu'à l'écrire. On vérifie l’initialisation d'une variable, ou si une fonction est redéfinie... Par conséquent, il vaut mieux se faciliter la lecture, quitte à passer plus de temps à l'écriture.
+
+Je vais vous présenter ici quelques principes du livre que vous pouvez essayer d'appliquer dès maintenant.
+
+
+
+## Choisissez vos noms avec intention
+
+
+
+Quand je vois votre variable, je dois comprendre immédiatement ce qu'elle représente. Un nom de variable doit révéler l'intention de celle-ci. Et si vous en trouvez un meilleur, il faut le changer.
+
+Pourquoi cette variable existe ?
+A quoi elle sert ?
+Comment je l'utilise ?
+
+Son nom doit pouvoir répondre à toutes ces questions.
+
+Alors évitez les variables `a`, `m_dsc`. Ce n'est compréhensible que par vous et vous ne le comprendrez peut-être plus dans 1 an.
+
+```java
+private String ajouter(String a, String b)
+```
+
+Que fait cette méthode ? Est-ce qu'on concatène a et b ? a au bout de b ou l'inverse ? Peut-être qu'on additionne 2 entiers sous forme de chaine ?
+
+```java
+private void concatenerChaineSurDestination(String chaine, String destination)
+```
+
+C'est plus clair non ? On a retiré la sortie en considérant qu'une concaténation va plutôt affecter la valeur d'une variable plutôt que de retourner un résultat. De plus la répétition des paramètres dans le nom de la méthode permet de ne pas se tromper sur l'ordre quand on l'appelle. On sait également que destination est la variable qui va être modifiée.
+
+Utilisez également des noms bien distincts. Il ne doit pas y avoir plusieurs sens possibles. `listePrix` est généralement un mauvais choix, sauf si c'est vraiment une liste. Le mot Liste à un sens pour un programmeur et il s'attend à quelque chose en le voyant. Même si c'est vraiment une liste, vous vous compliquez la tâche si un jour vous souhaitez changer la structure de donnée. Soit vous devez changer le nom partout dans le code, soit vous ne le faites pas et allez rendre confus le prochain développeur qui regardera votre code (Et ça sera peut-être vous).
+
+Les noms doivent être facilement repérables lors de la navigation dans le code. `HAUTEUR_TERRAIN` est plus facilement repérable que `10`, en plus les occurrences de `10` se mélangeront à d'autres occurrences qui n'auront pas la même signification que la hauteur du terrain.
+
+
+
+## Les classes : un rôle clair
+
+
+
+Une classe doit être courte et n'avoir qu'une seule responsabilité. Autrement dit, il ne doit y avoir qu'une seule raison de la modifier. Si vous trouvez plusieurs raisons de modifier la classe, elle à plusieurs responsabilités et peut être divisée en plusieurs classes.
+
+Son nom décrit évidemment sa fonctionnalité. Un nom du type `Manager` est ambigu et la classe aura sûrement trop de responsabilités.
+
+Il faut également limiter le nombre de variables d'instance et idéalement chaque méthode utilise au moins une de ces variables.
+
+Pour limiter les dépendances, si notre classe utilise du code d'une dépendance externe, il faut l'isoler au lieu de l'introduire dans la classe. Pour cela une solution est de créer une interface puis une classe implémentant cette interface en utilisant le code externe. Ainsi notre classe de départ utilise cette interface au lieu d'être dépendant. On peut très bien changer la dépendance par une autre tant qu'elle respecte l'interface. De plus pour les tests unitaires, on peut créer un Mockup implémentant l'interface qui simulera les résultats attendus pour pouvoir tester sans dépendre d'autre chose que la classe à tester.
+
+Robert C. Martin évoque le principe d'inversion des dépendances qui stipule que les classes devraient dépendre d'abstractions et non d'objets concrets.
+
+
+
+## Formatage : rester simple
+
+
+
+L'organisation physique de vos lignes de code est presque aussi important que le code lui même. Essayez de garder des fichiers courts aux alentours de 200 lignes (500 maximum). Si il est trop long, il a sûrement trop de rôle à jouer et peut être divisé. Le nom de chaque module doit permettre de déterminer à lui seul si vous êtes dans le bon fichier.
+
+A l'intérieur d'un module, le code de haut niveau est placé en haut et plus on descend, plus on entrevoit les manipulations de bas niveau.
+
+Les concepts proches sont proches physiquement dans le code. Les fonctions appelantes sont au dessus des fonctions appelées pour pouvoir les retrouver et comprendre l'ensemble rapidement. (Impossible dans certains langages comme le Pascal)
+
+Dans votre code, un ensemble de ligne représente une seule idée. Dans une méthode, laissez des lignes vides entre les différentes idées, cela rendra le code bien plus agréable à la lecture si on peut passer fluidement d'un bloc à l'autre.
+
+Ces règles semblent simples, mais je suis le premier à écrire mes méthodes à la suite sans jamais les replacer. Je parie que vous avez déjà vécu l'effet yo-yo on cherchant des méthodes spécifiques dans votre code.
+
+
+
+## Conclusion
+
+
+
+Appliquer même un seul de ces principes pourraient vous faciliter la vie ou celle de la personne qui lira votre code. Cependant, il ne faut pas culpabiliser si vous n'arrivez pas à coder de façon "propre" naturellement.
+
+L'auteur énonce lui-même que lorsqu'il code, son code est très loin de ressembler à celui qu'il montre dans le livre. Mais, une fois que le code marche, plutôt que de passer à la fonctionnalité suivante, il **refactore** son code pour le rendre plus lisible et pour respecter les principes de son livre. En possédant une batterie de tests fonctionnels, il peut modifier son code sans crainte que ce qu'il a fait ne marche plus.
+
+Si vous voulez en savoir plus, je vous invite à lire le [livre](https://www.amazon.fr/Clean-Code-Handbook-Software-Craftsmanship/dp/0132350882) et je pense qu'il mérite d'être lu par n'importe quel programmeur visant à s'améliorer.

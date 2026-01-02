@@ -1,0 +1,121 @@
+---
+title: Remonter dans le temps avec Git
+author: Morgan Ridel
+date: 2017-08-09
+hero: /static/images/clock-474128_640.jpg
+---
+
+_Cet article fait partie d'une série d'article sur Git pour les débutant comprenant un article sur les [bases du développement avec Git et GitHub](../comment-utiliser-git-en-10-minutes/) et un autre sur [les branches](../les-bases-des-branches-avec-git/)._
+
+Un des avantages principaux de Git, c'est le stockage des différents commits depuis le début du suivi du projet. J'ai donc déjà évoqué le fait qu'on puisse retourner dans un état passé comme un "point de sauvegarde". On peut aussi annuler des actions réalisées par certains commits.
+
+Mais comment faire concrètement ?
+
+C'est ce que nous allons voir ici !
+
+
+
+## Voyager dans le passé
+
+
+
+Git permet très simplement d'observer l'état d'un projet tel qu'il était au moment de n'importe quel commit. Il vous suffit de connaître l'id du commit. Si vous ne le saviez pas encore, vous pouvez consulter l'historique des commits sur la branche actuelle avec la commande suivante:
+
+```git
+git log
+```
+
+Vous obtiendrez alors quelque chose de cette envergure:
+
+```git
+commit 46e0b340e82a0d7924bdd81a43cafca4b52b66c5
+Author: Jean <jean@jadoregit.com>
+Date: Tue Jul 25 15:56:08 2017 +0200
+
+Added style.css !
+
+commit 52e3b1347e637fda7691433d311270a187ec0ab6
+Author: Jean <jean@jadoregit.com>
+Date: Tue Jul 25 14:25:50 2017 +0200
+
+Initial commit
+```
+
+La longue chaine de caractère du type `52e3b1347e637fda7691433d311270a187ec0ab6` c'est l'id du commit. À partir de cet id vous pouvez retourner à l'état du projet juste après que ce commit ait été fait.
+
+Il faut pour cela utiliser une commande que vous avez déjà vue dans l'[article sur les branches](http://morganridel.fr/les-bases-des-branches-avec-git/) : `git checkout` !
+
+```git
+git checkout 52e3b1347e637fda7691433d311270a187ec0ab6
+```
+
+Vous pouvez à tout moment retourner au dernier commit si vous le souhaitez:
+
+```git
+git checkout master
+```
+
+Mais je sens que vous n'êtes pas très heureux à l'idée de devoir recopier à chaque fois un id aussi long... Heureusement Git a pensé à vous, et si vous écrivez assez de caractères pour différencier ce commit des autres la commande marchera tout de même:
+
+```git
+git checkout 52e3
+```
+
+Ici les 4 premiers caractères suffisent.
+
+Votre répertoire est maintenant identique à celui du passé, vous avez voyagé dans le temps ! Malheureusement, vous ne pouvez pas changer l'histoire et tous les commits que vous faites à partir de maintenant n'affecteront pas le futur.
+
+En revanche vous pouvez à tout moment créer une branche à partir du commit passé:
+
+```git
+git checkout -b ma-branche-dans-le-passe
+```
+
+Vous pouvez alors travailler sur des modifications à partir d'une ancienne version, et la fusionner plus tard sur le présent !
+
+
+
+## Annuler d'anciennes actions
+
+
+
+Parfois, vous pouvez vouloir annuler totalement les modifications apportées par un commit. Git est capable d'identifier les ajouts et suppressions de ligne qui font la différence entre deux commits.
+
+Ainsi il est possible de créer un nouveau commit qui effectue exactement l'inverse de ce qu'à effectué un ancien commit ! c'est la commande `git revert`.
+
+```git
+git revert 24sa5
+```
+
+Il est possible que vous ayez à faire à des conflits si vous voulez annuler un commit dont les lignes qu'ils concernent ont été à nouveau modifiées par la suite.
+
+
+
+## Détruire l'histoire et remonter dans le temps.
+
+
+
+Dans certains cas, tout va mal et vous voulez retourner précisément à un point dans le passé et y rester.
+
+Pour cela vous pouvez utiliser la commande suivante pour retourner au commit souhaité (ici 24sa5):
+
+```git
+git reset --hard 24sa5
+```
+
+Le paramètre --hard va remettre les fichiers à l'état du commit indiqué. Si vous l'omettez, les commits suivants celui du retour seront supprimés mais les fichiers ne changeront pas d'état.
+
+**ATTENTION !!**: Cette méthode est vivement déconseillée si vous travaillez sur un dépôt distant sur GitHub. En effet, vous détruisez des commits ce qui est très handicapant si d'autres personnes travaille sur votre projet. L'idéal serait que toute modification soit réalisée par un nouveau commit. Voici une méthode permettant cela.
+
+Si vous voulez retourner à un état passé et le garder sans supprimer les commits précédents, vous pouvez utiliser la méthode suivante pour créer un nouveau commit où les fichiers seront exactement dans le même état que le commit passé souhaité.
+
+Placez vous à la racine du repertoire suivi par Git puis :
+
+```git
+git checkout 24sa5 .
+git commit -m "Rollback to 24sa5"
+```
+
+(Le point est nécessaire)
+
+Il est à noter que les fichiers ajoutés depuis le commit en question ne seront pas supprimés du projet. Seules les modifications sur les fichiers seront annulées.

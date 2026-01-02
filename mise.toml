@@ -1,0 +1,12 @@
+[tools]
+caddy = "latest"
+elixir = "1.19.4-otp-28"
+erlang = "28.3"
+node = "latest"
+watchexec = "latest"
+
+[tasks.build]
+run = "mix build"
+
+[tasks.dev]
+run = "sh dev.sh"

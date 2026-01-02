@@ -1,0 +1,130 @@
+---
+title: Développer en suivant le cycle en V
+author: Morgan Ridel
+date: 2017-11-16
+hero: /static/images/busy-1972122_1280.jpg
+---
+
+Après avoir appris les bases de la programmation dans mon école, on nous a vite enseigné à suivre une méthode de développement de projets, même pour des exercices basiques. On nous décourageait vivement de coder directement sur à l'ordinateur avant d'avoir posé et résolu le problème sur le papier.
+
+La méthode que nous avons utilisée sans arrêt, c'est le **cycle en V**.
+
+A force de l'utiliser, j'ai fini par me rendre compte qu'elle n'est pas toujours adaptée en situation réelle. Il existe aujourd'hui d'autres méthodes efficaces pour gérer des projets informatique efficacement . Mais étant donné le nombre de fois où j'ai suivi le cycle en V, je me suis dit qu'il pouvait être intéressant à partager.
+
+Dans cet article je vais le décrire exactement de la façon dont il m'a été enseigné. Si vous connaissez son principe, il est possible que vous ne l'appliquiez pas exactement de la même manière.
+
+Il est à noter que lorsque que j'utilisais encore strictement cette méthode, je n'avais encore jamais fait de programmation orientée objet.
+
+
+
+## La méthode
+
+
+
+Le cycle en V tient son nom de sa forme lorsqu'il est représenté :
+
+![](/static/images/Cycle_de_developpement_en_v.jpg)
+
+Le principe est de partir du début du V en descendant pendant la partie "théorique" de conception. Puis une fois le produit développé, de remonter en réalisant les testq vérifiant chaque étape de la conception.
+
+Détaillons les étapes telles que j'avais l'habitude de les réaliser.
+
+
+
+### Spécifications
+
+
+
+Cette étape correspond à la réalisation d'une analyse descendante. Dans mon cas, c'était un arbre de toutes les fonctions du projet (représentées par des boites).
+
+Les fonctions qui sont des dépendances d'autres fonctions sont placées en dessous de celle-ci et lui sont reliées par un trait.
+
+On retrouve sur chaque fonction les entrée et sorties et leurs type de donnée.
+
+Cette étape permet également de définir des types si ilq ne sont pas évidents.
+
+Voici un exemple de l'analyse descendante de mon premier vrai projet informatique à l'INSA :
+
+![](/static/images/AnalyseDescendante.jpg)
+
+Ce n'est ni beau ni parfait mais cela peut vous donner une idée de son utilité.
+
+
+
+### Conception préliminaire
+
+
+
+Nommée conception architecturale sur le schéma, la conception préliminaire est une étape consistant à écrire toutes les signatures des fonctions de l'analyse descendante.
+
+On fait une liste de toutes les signatures, sans contenu et en précisant les noms des variables et si elles sont en entrée ou en sortie. Par exemple :
+
+```
+`fonction additionnerDeuxEntiers(E a : Entier, b: Entier) : Entier
+fonction soustraireDeuxEntiers(E a : Entier, b: Entier) : Entier
+procedure incrementerEntier(E/S a : Entier)
+procedure afficherMenu()
+```
+
+Une procédure est une fonction qui ne renvoie rien (fonction qui renvoie void dans d'autres langages). Le pseudo code que nous utilisions est inspiré du Pascal et les procédures viennent de lui.
+
+
+
+### Conception détaillée
+
+
+
+Pendant la conception détaillée, on reprend toutes les fonctions de la conception préliminaire et on écrit leur corps. Pas sur le PC attention ! On sort du papier et on écrit le fonctionnement interne de toutes les fonctions à la main.
+
+Voici un exemple pour une fonction de l'exemple précédent:
+
+```
+`fonction additionnerDeuxEntiers(E a : Entier, b: Entier) : Entier
+déclarations: resultat : Entier
+début
+resultat <- a + b
+retourner resultat
+fin
+```
+
+
+
+### Codage
+
+
+
+Enfin ! Si toutes les étapes précédentes se sont bien déroulées, il suffit de "traduire" la conception détaillée dans le langage de votre choix et votre projet est arrivé en bas du "V" !
+
+Si lors d'une étape il y a un problème qui intervient provenant d'une étape précédente, il faut remonter le V pour corriger le problème puis redescendre en faisant les modifications nécessaires.
+
+Ainsi si vous vous rendez compte lors de la conception détaillée qu'il vous manque une fonction, vous devez l'ajouter à l'analyse descendante, puis en faire la conception préliminaire avant de pouvoir écrire sa conception détaillée. (Oui c'est lourd).
+
+
+
+### La remontée du V
+
+
+
+Une fois le codage terminé c'est le moment de faire les tests afin de vérifier que les étapes de conceptions ont porté leurs fruits. Dans le cadre de ma pratique, on effectuait pratiquement que des tests unitaires.
+
+Les tests unitaires consistent à tester individuellement toutes vos fonctions pour vérifier qu'elle renvoie le résultat attendu.
+
+Les tests d'intégration servent à tester les modules du projet de façon plus générale, pour voir si ils fonctionnent ensemble.
+
+Les tests de validations servent à vérifier que le projet résout bien le problème qu'il était censé résoudre au départ et qui est défini avec l'analyse descendante.
+
+
+
+## En situation réelle
+
+
+
+J'ai eu l'occasion de me rendre compte des limites de cette méthode de gestion de projet lors de la réalisation d'un projet informatique en groupe de 5 pendant ma troisième année à l'école.
+
+En effet, par le passé, nous appliquions cette méthode soit seul dans le cadre de petits exercices soit en groupe de 2-3 dans le petit projet informatique de deuxième année (cf analyse descendante plus haut).
+
+Le projet à 5 était beaucoup plus dense et nécessitait plus de travail. Dans ce cas, la conception détaillée représentait énormément de travail. De plus la traduction vers le C n'était pas toujours évidente.
+
+Si je me rendais compte que nous avions oublié des éléments une fois arrivé à la conception détaillée ou au codage, corriger ces éléments prenait beaucoup de temps. Et il n'était pas du tout rare d'oublier des éléments dans un projet de cette ampleur. Et ce temps perdu à corriger les étapes précédentes était loin d'être rentable.
+
+En bref, le cycle en V est une méthode qui m'a semblé utile pour apprendre la rigueur en programmation et le fait que du travail avant codage soit parfois nécessaire. En revanche, ce n'est pas la meilleure méthode de nos jours pour gérer un projet avec des deadlines courtes, la correction des problèmes ajoutant des délais non négligeables.

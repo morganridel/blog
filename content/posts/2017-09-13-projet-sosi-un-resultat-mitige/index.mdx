@@ -1,0 +1,143 @@
+---
+title: "Projet SOSI : un résultat mitigé"
+author: Morgan Ridel
+date: 2017-09-13
+hero: /static/images/neurons-440662_1280.jpg
+---
+
+
+La première semaine de cours dans le département ASI de l'INSA de Rouen est une semaine dite SOSI. Durant cette semaine nous n'avons pas de cours à proprement parler. Nous assistons à de nombreuses conférences délivrées par des entreprises en général et parallèlement nous devons réaliser un projet que nous avons choisi parmi une liste de sujets proposés par les professeurs.
+
+Le sujet que j'ai choisi est le suivant :
+_Réaliser un jeu de puissance 4 humain contre ordinateur dont l'IA sera basée sur un réseau de neurone artificiel. L'entrée du réseau sera une image 7x6 de la grille du puissance 4, la sortie une classe de 1 à 7 correspondant à la meilleure colonne à jouer au prochain tour._
+
+Nous étions 4 à travailler sur ce projet, et nous avons décidé de le réaliser en Python car nous avons trouvé de nombreuses librairies de machine learning dans ce langage. J'ai été désigné chef de projet et j'ai donc géré l'organisation du projet et la répartition des tâches.
+
+
+
+## Le support du projet : un Puissance 4
+
+
+
+Avant de nous lancer dans le réseau de neurones, nous voulions rapidement réaliser un jeu de Puissance 4 qui nous permettrait de tester les résultats de notre IA dans le futur. J'ai alors divisé le groupe en 2. Deux personnes (dont moi) coderont un Puissance 4 dans lequel il sera possible d'inclure n'importe quel IA et pendant ce temps, les deux autres se renseigneront sur le machine learning et les librairies que nous pourrons utiliser pour le projet.
+
+L'objectif était de finir le Puissance 4 le premier jour, afin de pouvoir se concentrer pleinement sur le réseau de neurones. Une difficulté que j'ai rencontrée est que **je n'avais jamais fait de Python avant ce projet**.
+
+J'ai donc appris très rapidement les bases et la syntaxe de Python 3 avec le [tuto d'OpenClassrooms](https://openclassrooms.com/courses/apprenez-a-programmer-en-python). En quelque temps j'ai dû assimiler les spécificités du Python (indentation, manque de point-virgule, modules...), sa syntaxe (boucles, conditionnelles...) et son aspect objet (classe, héritage, structures de données...).
+
+Nous avons finalement réussi à finir le jeu de Puissance 4 le jour même comme prévu. Pour présenter la conception, nous avions une classe "Plateau" qui était représentée par un tableau en deux dimensions contenant des pions, ainsi qu'un ensemble de fonctions pour lâcher des pions dans le plateau et vérifier si la partie est terminée.
+
+Une autre classe "Joueur" avait la possibilité de choisir une colonne pour jouer. Cette classe peut-être dérivée en classe fille représentant une IA qui aura sa propre implémentation de "choisirColonne".
+
+Finalement, la classe "Partie" prenait 2 "Joueur" et crée un "Plateau" pour faire jouer les 2 joueurs dans une partie de Puissance 4.
+
+Cette implémentation du Puissance 4 est loin d'être parfaite, elle ne prend pas en compte les égalités et elle n'empêche pas de jouer dans une colonne pleine par exemple. Mais ce n'était pas la priorité, nous voulions juste un support fonctionnel pour y implémenter une intelligence artificielle.
+
+
+
+## Trouver un dataset
+
+
+
+En premier lieu, nous avons trouvé pas mal de choses en rapport avec l'apprentissage génétique et les IA qui s'améliorent toutes seules mais nous avons été redirigé par notre professeur responsable du projet vers une utilisation du machine learning avec apprentissage sur un ensemble de données.
+
+L'idée est d'utiliser un dataset et de faire apprendre les bons coups au réseau de neurones sur une partie de ce dataset, puis de l'évaluer sur une autre partie pour voir si il obtient les bons résultats.
+
+Notre objectif était donc d'abord de trouver ce dataset. Nous avons envisagé de le créer par nous même, mais cela nous a semblé trop difficile d'obtenir un ensemble de partie représentative assez conséquent. Le [seul ensemble de données que nous avons trouvé](https://archive.ics.uci.edu/ml/datasets/Connect-4) est trouvable sur l'UCI.
+
+Cet ensemble contient plus de 67 000 plateaux de puissance 4 sous la forme :
+
+```
+`x,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,b,x,o,x,o,x,o,b,b,b,b,b,b,b,b,b,b,b,b,o,b,b,b,b,b,win
+```
+
+On a le contenu des 42 cases du Puissance 4 ainsi qu'une valeur indiquant la partie est gagnante ou perdante (théoriquement) pour le joueur "x".
+
+Le problème est que nous voulions le meilleur coup à jouer au prochain tour, pas une annonce de victoire.
+
+Cet ensemble étant le seul dataset que nous avions trouvé, nous avons décidé de le modifier pour qu'il s'adapte à nos besoins.
+
+Nous avons décidé d'utiliser un algorithme Minimax pour déterminer le prochain meilleur coup pour un plateau donné. Grâce à cet algorithme nous avons lu chaque ligne du dataset, calculé le meilleur coup, et récrit la ligne dans un nouveau fichier sous la forme :
+
+```
+`b,b,b,b,b,b,x,b,b,b,b,b,b,b,b,b,b,b,x,o,x,o,x,o,b,b,b,b,b,b,b,b,b,b,b,b,o,b,b,b,b,b,3
+```
+
+Cela a pris 15 heures pour créer le nouveau fichier...
+
+En effet, le dataset ne correspondait pas à la structure de donnée "Plateau" que nous avions créée. De plus l'algorithme Minimax à été adapté d'un autre jeu de Puissance 4 par manque de temps, et il fallait donc convertir le Plateau pour coller à la structure de donnée utilisé par Minimax.
+
+Pour chaque ligne, il fallait donc transformer 2 fois la structure de donnée avant d'obtenir le meilleur coup à jouer, ce qui n'est évidemment pas du tout optimal.
+
+
+
+## Création du réseau de neurones
+
+
+
+Pour finir nous avons opté pour la librairie Keras pour réaliser notre réseau de neurones. Elle abstrait une grosse partie du concept de machine learning, ce qui nous a permis d'obtenir quelque chose de fonctionnel sans avoir besoin de nous plonger dans la théorie mathématique en si peu de temps.
+
+On peut définir une couche d'entrée du réseau de neurones, une couche de sortie (pour nous la colonne à jouer) et autant de couches intermédiaires que souhaitées. En s'entraînant le réseau de neurones va affecter des "poids" à chaque élément des couches, et s'adapter en changeant ses poids au fur et à mesure qu'il trouve ou non la bonne colonne pour chaque partie.
+
+```python
+  
+dataset = pd.read_csv("data/connect-4-target.data", header=None)
+
+X = dataset.iloc[:,:42]
+
+# Encodage des string en int
+for column in X.columns:
+if X[column].dtype == type(object):
+le = LabelEncoder()
+X[column] = le.fit_transform(X[column])
+
+Y = dataset.iloc[:,42:]
+Y = np_utils.to_categorical(Y)
+
+X = np.array(X)
+Y = np.array(Y)
+
+# Création du réseau de neurones
+model = Sequential()
+model.add(Dense(32, input_dim=42, activation='relu'))
+model.add(Dense(12, activation='relu'))
+model.add(Dense(8, activation='softmax'))
+
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+# Entrainement
+model.fit(X[1:57000:2,:], Y[1:57000:2,:], epochs=150, batch_size=50)
+print("training done")
+model.save("data/keras_model")
+# Evaluation
+scores = model.evaluate(X[2:57000:2,:], Y[2:57000:2,:])
+print("\n%s: %.2f%%" % (model.metrics_names[1], scores[1]*100))
+```
+
+Malgré les différents paramètres que nous avons essayés de changer (nombre d'itérations, de couches, de neurones par couche...), nous avons toujours obtenu un taux de prédictions correctes entre 30 et 50 %, ce qui est assez faible. Nous ne savons pas exactement d'où vient ce problème mais nous soupçonnons notre manque de connaissance du sujet (donc une mauvaise réalisation du réseau de neurones) ou un dataset trop peu représentatif (et donc pas adapté à notre problème).
+
+
+
+## Implémentation de l'IA dans le Puissance 4
+
+
+
+Le dataset ne comprenant que des parties à 8 pions (et non finies), nous attendions des prestations médiocres de notre IA en jeu... et ce fut le cas, en partie.
+
+Selon nous, même si nous aurions eu de bons résultats sur le réseau de neurones, il n'aurait été bon que pour prédire un coup lorsqu'il y avait 8 pions sur le terrain. De plus n'ayant jamais vu de partie finies, il n'aurait même pas "connaissance" du fait que 4 pions puissent être alignés et n'essaierait donc jamais de gagner.
+
+Nous avons tout de même implanté l'IA par curiosité.
+
+Finalement, elle jouait effectivement très mal, mais nous avons remarqué quelques comportements intéressants. D'abord, l'IA semblait reproduire un comportement que nous avions remarqué quand nous avions fait jouer 2 IA Minimax entre elles : elle se mettait parfois à jouer tout le temps sur la même colonne en alternance avec l'autre joueur. Ensuite il lui arrivait de bloquer un alignement de 3 pions de façon assez régulière (bien que pas tout le temps) pour écarter le hasard. Nous en avons déduit que cela vient du nombre de parties vues dans le dataset où une ligne de 3 pions est bloquée par un pion de couleur opposée. (Car il n'y a pas de partie finies, il doit y avoir un nombre non négligeable de cas comme celui-là).
+
+
+
+## Conclusion
+
+
+
+L'objectif de cet article était de partager le projet que nous avons réalisé. Il est loin d'être parfait et pourrait même être considéré comme un "échec" au vu des résultats, mais c'est une raison de plus pour le montrer. C'est toujours intéressant d'apprendre de nouvelles choses même si on ne réussit pas du premier coup. Nous en avons appris beaucoup sur le Python, mais nous avons aussi découvert l'univers du machine learning, même si nous n'avons pas réussi à créer une IA parfaite.
+
+Je suis ouvert à toute remarque concernant le projet, des conseils, ou des explications sur ce que nous aurions dû faire pour l'améliorer !
+
+Vous pouvez retrouver [le code source du projet sur Github](https://github.com/lheau/SOSI-Puissance4-ML)

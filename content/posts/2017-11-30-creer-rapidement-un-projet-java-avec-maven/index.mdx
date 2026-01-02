@@ -1,0 +1,146 @@
+---
+title: Créer rapidement un projet Java avec Maven
+author: Morgan Ridel
+date: 2017-11-30
+---
+
+
+J'ai récemment découvert Maven, un outil d'automatisation de build permettant de rapidement créer et compiler des projets en Java tout en gérant les dépendances. Une sorte de [Make](http://morganridel.fr/comment-utiliser-make/) dopé et plus simple à gérer. Je ne maîtrise pas tous les aspects de cet outil, mais nous allons voir comment rapidement créer un projet et gérer ses dépendances.
+
+
+
+## Installer Maven
+
+
+
+Pour installer Maven, procurez-vous l'archive sur le [site officiel](https://maven.apache.org/download.cgi) et décompressez-la où bon vous semble, ce sera votre répertoire d'installation.
+
+Afin que tout fonctionne pour le mieux, il faut vous assurer que votre variable d'environnement **JAVA_HOME** est bien configurée pour que Maven puisse utiliser le JDK.
+
+Pour pouvoir utiliser Maven simplement depuis n'importe quel terminal vous devez ajouter le répertoire _bin/_ (du dossier d'installation décompressé) à votre variable d'environnement **PATH**.
+
+Si vous ne savez pas comment vous y prendre, il existe de nombreuses explications sur Internet pour modifier ces variables, ainsi que [les explications officielles](https://maven.apache.org/install.html).
+
+Pour vérifier que vous pouvez utiliser Maven, ouvrez un terminal et tester la commande suivante:
+
+```bash
+mvn -v
+```
+
+![](/static/images/mvnversion.png)
+
+
+
+## Créer un projet simple avec Maven
+
+
+
+Vous pourriez créer à la main l'architecture d'un projet Maven mais il est bien plus simple d'utiliser le plugin "archetype" pour gagner du temps. Ce plugin permet de créer et d'utiliser des modèles de projets prédéfinis.
+
+Placez vous juste là où vous souhaitez créer le nouveau projet et exécutez la commande:
+
+```bash
+mvn archetype:generate
+```
+
+Le processus de création de projet interactif démarre alors et va vous demander le modèle de projet que vous souhaitez utiliser. Nous allons laisser la valeur par défaut correspondant au "maven-archetype-quickstart" (1085 pour moi) et juste appuyer sur Entrée.
+
+![](/static/images/mavenprojectmodel.png)
+
+On demande ensuite la version, laissez également la valeur par défaut (la plus récente).
+
+Le prochain paramètre à renseigner est le _groupId_, c'est un identifiant supposé unique du projet. Il est conseillé de suivre la convention de nommage des packages Java. pour ma part je vais mettre "fr.morganridel.tutomaven".
+
+Ensuite, _artifactId_ est le nom du jar obtenu par la compilation de votre projet (sans la version), je vais mettre "tuto-maven".
+
+Pour la version, on peut mettre "1.0"
+
+Le package représente la hiérarchie où se trouve votre "main" c'est le package principal du projet, je vais simplement recopier le groupId.
+
+Une fois le projet crée on se retrouve avec une arborescence classique de projet Maven:
+
+
+
+
+
+  * Un dossier src/ contenant les sources du projet (main) et des tests (test) suivant la même structure de package.
+
+
+  * Un fichier **pom.xml** à la racine, c'est le "project object model" qui contient toutes les informations du projet ainsi que ses dépendances.
+
+
+
+
+
+## La gestion des dépendances
+
+
+
+Le pom.xml permet de très facilement gérer les dépendances de chaque projet Maven. En effet dans le projet créé précédemment, nous voyons que la dépendance JUnit est déjà prête par défaut. Ainsi, à la compilation, Maven saura qu'il aura besoin de JUnit pour compiler le projet et s'occupera de le télécharger si il n'est pas présent localement.
+
+Par défaut, Maven ira télécharger les dépendances sur un [dépôt en ligne](https://mvnrepository.com/) si vous n'avez pas la dépendance. On peut par exemple retrouver [JUnit sur le dépôt officiel](https://mvnrepository.com/artifact/junit/junit/4.12) avec le code à inclure dans votre pom.xml. La version étant également précisée, cela évite les conflits lors du partage du projet avec d'autres gens. Tous les gens travaillant sur le projet travailleront avec la même version de toutes les dépendances.
+
+Localement les dépendances sont installées dans votre répertoire personnel dans le dossier _.m2\repository_. Vous pouvez également installer votre projet dans ce répertoire avec la commande `mvn install`, ce qui aura pour effet de packager votre projet, de le placer dans votre dépôt local, et donc de le rendre accessible en tant que dépendance pour d'autres projets.
+
+Ce système de dépôt permet par exemple d'avoir un dépôt en ligne commun pour que les membres d'une entreprise puisse partager les même dépendances et y accéder facilement.
+
+
+
+## Les phases
+
+
+
+Maintenant que vous savez créer un projet Maven et gérer ses dépendances, nous allons enfin pouvoir utiliser les options de build.
+
+Maven utilise des "**cycles de vie**" pour ses projets. Ceux-ci sont composés de **phases**.
+
+Le cycle de vie "default" est entre autre composé des phases suivantes dans l'ordre:
+validate -> compile -> test -> package -> verify -> install -> deploy
+
+Dans un projet, on peut demander l'exécution de n'importe quelle phase. Pour exécuter une phase, Maven exécutera automatiquement toutes les phases précédentes également.
+
+Par exemple avec :
+
+```bash
+mvn compile
+```
+
+Le projet sera validé, puis compilé.
+
+`mvn test` compilera puis exécutera les tests.
+
+
+
+## Pour résumer
+
+
+
+Avec seulement ces bases, il devient simple de gérer un projet en Java sans se casser la tête avec les dépendances et les paramètres du classpath.
+
+Pour gérer un projet avec Maven il suffit de:
+
+
+
+
+
+  * Créer le projet avec `mvn archetype:generate`
+
+
+  * Préciser ses dépendances dans le pom.xml
+
+
+  * Utiliser :
+
+
+  * `mvn compile` pour compile
+
+
+  * `mvn test` pour exécuter les tests
+
+
+  * `mvn package` pour créer un jar du projet
+
+
+  * `mvn install` pour rendre le projet disponible en tant que dépendance dans le dépôt local
+
+

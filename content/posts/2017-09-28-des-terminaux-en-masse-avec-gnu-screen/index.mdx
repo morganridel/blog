@@ -1,0 +1,260 @@
+---
+title: Des terminaux en masse avec GNU Screen
+author: Morgan Ridel
+date: 2017-09-28
+hero: /static/images/bash.jpg
+---
+
+Dans cet article nous allons parler de Screen, le multiplexeur de terminaux. Derrière ce nom barbare se cache en fait un logiciel bien pratique permettant de gérer plusieurs terminaux virtuels et de ne pas perdre son travail, en particulier sur un serveur à distance.
+
+J'ai découvert Screen dans les cadre de mes cours de réseaux et j'écris cet article pour en apprendre plus tout en partageant ce que je trouve.
+
+
+
+## Installer et lancer Screen
+
+
+
+Tout d'abord, Screen est disponible dans les dépôts de Linux et ne sera donc pas utilisable sous Windows.
+
+Utilisez le gestionnaire de paquets que vous souhaitez pour installer le paquet `screen`.
+
+Pour ma part, je suis sous Linux Mint:
+
+```bash
+sudo apt-get install screen
+```
+
+Une fois installé il suffit de l'exécuter pour créer votre premier terminal.
+
+```bash
+screen
+```
+
+Appuyez sur entrée et bien que rien ne semble avoir changé vous êtes actuellement dans Screen !
+
+
+
+## Gérer plusieurs terminaux.
+
+
+
+Quand vous lancez Screen vous créez ce qu'on appelle une **session**. Une session peut-être constituée de plusieurs **window**. Ces windows représentent des instances de terminaux, elles peuvent contenir bash pour que vous puissiez exécuter des commandes mais aussi des applications.
+
+Votre terminal de base contient donc une session de Screen qui émule elle même plusieurs terminaux.
+
+Passons maintenant à l'utilisation concrète. Quand vous êtes dans une session, vous pouvez utiliser de nombreuses commandes de Screen sous forme de raccourcis clavier, elles sont toutes préfixées par Ctrl+a (que je désignerai désormais par C-a)
+
+Pour commencer, `C-a i` (CTRL+a puis i) affiche des informations sur la fenêtre actuelle.
+
+![](/static/images/screen-info.png)
+
+Voir ces informations est une bonne nouvelle, cela veut dire que vous êtes bien dans Screen !
+
+L'information importante se trouve à la fin de la ligne: `0(bash)`
+Cela signifie que je suis dans la window 0 qui s'apelle "bash". Dans Screen les windows portent par défaut le nom du programme avec lesquels elles ont été lancées.
+
+Si vous le souhaitez, vous pouvez renommer votre window en utilisant le raccourci `C-a A` (n'oubliez pas la majuscule !). Vous pouvez alors écrire un nouveau nom pour cette window. Validez avec entrée puis affichez de nouveau les informations (`C-a i`) pour constater que vous avez bien changé le nom.
+
+Jusqu'ici, pas vraiment d'intérêt par rapport à un terminal classique. Voyons maintenant comment créer d'autre windows.
+
+Pour ajouter une nouvelle window à votre session, vous avez 2 possibilités:
+
+
+
+
+
+  * Le raccourci `C-a c` qui va créer une window en lançant votre shell par défaut.
+
+
+  * Exécuter screen dans votre session. Si vous lancez screen alors que vous êtes déjà dans une session, une nouvelle window va être créée au lieu d'une nouvelle session (sauf pour certains paramètres), vous pouvez également préciser, un programme à lancer au lieu du simple shell, par exemple:
+
+
+
+```bash
+screen vi
+```
+
+Dans les deux cas, vous êtes automatiquement redirigé sur la nouvelle window.
+
+Mais ne vous inquiétez pas, votre window précédente n'est pas perdue !
+
+Il existe plusieurs moyens de passer d'une window à l'autre :
+
+
+
+  * C-a ' : Vous permet d'entrer le numéro d'une window pour l'afficher
+
+
+  * C-a 0-9 : Permet d'afficher directement une window avec son numéro (seulement pour les 10 premières window)
+
+
+  * C-a n / C-a p: Affiche la window suivante / précédente
+
+
+  * C-a " : Affiche la liste des windows et vous permet de selectionner celle à afficher.
+
+
+
+![](/static/images/screenwindowchoice.png)
+
+Même sans être affichées, vos windows continuent de travailler en fond. Vous pouvez également voir toutes les windows de façon informative avec `C-a w`.
+
+Pour tuer la window dans laquelle vous êtes, utilisez `C-a k`.
+
+Une fonctionnalité particulièrement utile est le fait de pouvoir splitter le terminal en plusieurs régions, où chaque région peut contenir une window.
+
+
+
+
+
+  * `C-a S` : Divise la région horizontalement en 2 régions, créant ainsi une région vide
+
+
+  * `C-a |` : Idem mais verticalement
+
+
+  * `C-a TAB` : Focus la région suivante
+
+
+  * `C-a Q` : Supprime toutes les régions sauf l'actuelle
+
+
+
+Imaginons que vous soyez dans une session screen avec une window bash et une window top. À partir de la window affichant bash, on peut taper `C-a |` pour créer une nouvelle région vide. On peut se déplacer sur cette région avec `C-a TAB` puis y afficher top avec `C-a p` (ou l'une des autres méthodes d'affichage de window) par exemple. À partir de là je peux couper horizontalement avec `C-a S`, me déplacer dessus avec `C-a TAB` puis créer une nouvelle window avec `C-a c` pour y lancer vi.
+
+![](/static/images/screenscplit.png)
+
+Vous maîtrisez maintenant l'utilisation de screen pour manipuler différentes windows. Mais le meilleur reste à venir !
+
+
+
+## Les sessions avec Screen
+
+
+
+Nous avons pas mal bidouillé, mais nous sommes restés dans une seule et unique session. Le pouvoir de Screen réside dans le fait de pouvoir posséder plusieurs sessions. Chaque session peut avoir l'état **attachée** (la session est associée à un terminal) ou **détachée** (la session reste en fond).
+
+À partir d'une session screen utilisez le raccourci `C-a d` pour détacher la session actuelle.
+
+_Note: si vous avez mis en place des régions d'une certaine manière et que vous ne voulez pas perdre leur organisation, utilisez le raccourci `C-a :` puis tapez "layout save default". Ainsi votre organisation sera sauvegardée tant que votre session existera._
+
+Vous vous retrouvez alors dans le terminal original dans lequel vous avez lancé Screen. Cependant, votre session existe toujours avec toutes ses windows. Et elle continue d'effectuer tout ce qu'elle était déjà en train de faire.
+
+_Note 2 : C'est un énorme avantage lors de la connexion à un serveur distant en SSH par exemple. En effet, en temps normal si vous étiez en train de faire une opération longue et que vous perdiez la connexion à votre serveur, l'opération était interrompue. Par contre si vous avez la bonne idée de lancer cette opération dans Screen, en cas de déconnexion, vous êtes détaché de votre session. Mais vous pouvez sans aucun problème ré-attacher la session plus tard, l'opération n'aura pas été interrompue et sera peut-être même terminée !_
+
+Vous pouvez constater que votre session existe toujours à l'aide la commande:
+
+```bash
+screen -ls
+```
+
+La session existe (vous pouvez voir son nom) mais elle est cependant détachée.
+
+Pour attacher une session utilisez simplement la ligne suivante:
+
+```bash
+screen -r nomsession
+```
+
+Si aucune session n'est attachée à votre terminal, vous pouvez créer une nouvelle session en lançant simplement screen.
+
+Toutes les sessions cohabitent et peuvent être attachées et détachées à loisir.
+
+![](/static/images/sessionlist.png)
+
+On peut aussi détacher une session de n'importe où (un autre terminal par exemple):
+
+```bash
+screen -d nomsession
+```
+
+Pour détruire totalement une session, vous pouvez tuer toutes ses windows, ou utiliser la commande suivante:
+
+```bash
+screen -S nomsession -X quit
+```
+
+(-X envoie une commande interne dans une session)
+C'est équivalent à faire la commande `C-a C-\` dans une session.
+
+En combinant l'utilisation des sessions et des windows, on peut gérer plusieurs tâches de façon efficace. Screen dévoile tout son potentiel particulièrement dans le cas où nous sommes limités à un seul terminal, mais aussi dans le cas de la gestion d'une session sur un serveur distant. Dans mon cas je l'ai découvert dans le cadre du cours de réseau, où un réseau est simulé et qu'une machine virtuelle est contrôlée uniquement par un terminal.
+
+
+
+## Résumé des commandes utilisées dans cet article
+
+
+
+
+
+
+
+  * `C-a i` : Affiche des informations sur la window actuelle
+
+
+  * `C-a A` : Permet de renommer la window actuelle
+
+
+  * `C-a c` : Crée une nouvelle window et l'affiche.
+
+
+  * `C-a '` : Vous permet d'entrer le numéro d'une window pour l'afficher
+
+
+  * `C-a 0-9` : Permet d'afficher directement une window avec son numéro (seulement pour les 10 premières windows)
+
+
+  * `C-a n` / `C-a p`: Affiche la window suivante / précédente
+
+
+  * `C-a "` : Affiche la liste des windows et vous permet de sélectionner celle à afficher.
+
+
+  * `C-a w` : Affiche le nom de l'ensemble des windows
+
+
+  * `C-a k` : Tue la window actuelle.
+
+
+  * `C-a S` : Divise la région horizontalement en 2 régions, créant ainsi une région vide
+
+
+  * `C-a |` : Idem mais verticalement
+
+
+  * `C-a TAB` : Focus la région suivante
+
+
+  * `C-a Q` : Supprime toutes les régions sauf l'actuelle
+
+
+  * `C-a C-\` : Tue toutes les windows de la session et la termine.
+
+
+
+  * `screen [programme]` : Crée une session screen, ou une nouvelle window si on est dans une session.
+
+
+
+  * `screen -ls` : Affiche l'ensemble des sessions et leurs états.
+
+
+  * `screen -r nomsession` : Attache à votre terminal la session demandée.
+
+
+  * `screen -S nomsession -X quit` : Termine une session
+
+
+
+
+
+## Pour aller plus loin
+
+
+
+
+
+**RTFM** : On peut retrouver l'ensemble des commandes avec un simple `man screen` ou [sur internet](https://www.gnu.org/software/screen/manual/screen.html).
+
+Il existe d'autres multiplexeurs de terminaux, mais je n'ai pas encore eu l'occasion de les essayer. L'avantage de screen est qu'il est installé par défaut sur plusieurs machines. Sinon je peux évoquer des noms comme Tmux et Byobu.

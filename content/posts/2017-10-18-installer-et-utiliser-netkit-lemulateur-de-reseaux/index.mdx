@@ -1,0 +1,192 @@
+---
+title: "Installer et utiliser Netkit, l’émulateur de réseaux"
+permalink: /installer-et-utiliser-netkit-l-emulateur-de-reseaux
+author: Morgan Ridel
+date: 2017-10-18
+hero: /static/images/it-1359518_1280.jpg
+---
+
+Pendant mes TPs de réseaux nous utilisons Netkit, un petit logiciel permettant de créer des machines virtuelles et de les relier entre elles selon une configuration de réseau définie. Dans cet article je vais vous expliquer comment installer Netkit sous Linux et les commandes de bases pour pouvoir avoir un petit réseau en marche.
+
+
+
+## Installer Netkit
+
+
+
+Pour installer Netkit, il faut réunir 3 éléments:
+
+
+
+
+
+  * Le cœur de Netkit, ses commandes et sa documentation
+
+
+  * Le noyau utilisé par les machines virtuelles
+
+
+  * Le système de fichiers contenant tous les outils et services réseaux qui seront utilisés
+
+
+
+On peut télécharger ces 3 éléments sur [le site de Netkit](http://wiki.netkit.org/index.php/Download_Official), je vous conseille de les récupérer dans la catégorie "_Latest Stable Release_".
+
+Une fois téléchargées, placez les 3 archives dans le dossier dans lequel vous souhaitez installer Netkit. Si vous les placez dans votre home, ils seront accessibles uniquement par l'utilisateur de ce home. Personnellement, je vais l'installer dans _/opt/_ mais cela implique d'exécuter certaines commandes avec les droits de super utilisateur (`sudo commande`).
+
+_Toutes les informations officielles d'installation sont disponibles [ici](http://wiki.netkit.org/download/netkit/INSTALL)_
+
+Placez-vous donc dans le dossier des archives avec un terminal et exécutez les commandes suivantes pour décompresser l'archive:
+
+```bash
+tar -xjSf netkit-x.y.tar.bz2
+tar -xjSf netkit-filesystem-Fx.y.tar.bz2
+tar -xjSf netkit-kernel-Kx.y.tar.bz2
+```
+
+Les x et y contenus dans les noms de vos fichiers peuvent varier selon la version de Netkit.
+
+Une fois les archives décompressées, vous obtenez un dossier "netkit".
+
+Afin de pouvoir exécuter Netkit de n'importe où, il faut modifier quelques variables d'environnement. Pour cela vous avez plusieurs possibilités. Si vous utilisez le shell par défaut (Bash) et que vous ne souhaitez accéder à Netkit que sur le compte d'un utilisateur particulier, vous pouvez modifier ces variables dans le fichier .bashrc de votre home.
+
+Pour ma part, je reste sur une configuration globale à l'ordinateur, je vais donc modifier le fichier `/etc/profile` dont les changements affecteront tous mes terminaux.
+
+Rajoutez ces 3 lignes à la fin de votre fichier de votre fichier de configuration:
+
+```bash
+export NETKIT_HOME=/opt/netkit
+export MANPATH=:$NETKIT_HOME/man
+export PATH=$NETKIT_HOME/bin:$PATH
+```
+
+La première permet de définir une variable d'environnement NETKIT_HOME qui représente la localisation de votre dossier netkit (là où vous avez décompressé les archives).
+La seconde permet d'ajouter les pages de documentation de Netkit au manuel.
+La dernière ajoute les exécutables de Netkit à votre PATH, de cette façon vous pouvez lancer des commandes netkit de n'importe en utilisant seulement le nom de l'exécutable correspondant.
+
+Pour valider ces changements, il faut parfois vous déconnecter puis vous reconnecter à votre session. Pour les vérifier, tenter d'afficher les variables d'environnement ou les pages du manuel:
+
+```bash
+echo $NETKIT_HOME
+man netkit
+```
+
+Vous pouvez aussi vérifier que Netkit est bien utilisable en exécutant le fichier `check_configuration.sh` dans le dossier où Netkit est installé. Pour ma part:
+
+```bash
+cd /opt/netkit
+./check_configuration.sh
+```
+
+Il est possible que vous ayez besoin d'installer certains packages afin que Netkit soit 100 % fonctionnel. Si tout marche, vous obtiendrez un message l'indiquant:
+
+![](/static/images/netkitready.png)
+
+Netkit est maintenant prêt à être utilisé !
+
+
+
+## Création d'un lab pour tester un réseau
+
+
+
+Afin de pouvoir créer un environnement réseau réutilisable, Netkit permet la création de "labs". Ce sont des dossiers qui contiendront la configuration de vos réseaux émulés, de chacune des machines contenus dans ce réseau, mais aussi de leurs disques durs.
+
+**Attention: si le système de fichier du dossier dans lequel se trouve votre lab n'est pas adapté, le disque dur d'une machine prendra énormément plus de place (environ 10 Go). Un système de fichier classique de Linux type ext4 fonctionne parfaitement (la taille affichée n'est pas la taille réelle occupée).**
+
+_Si vous voulez comprendre plus en détail le fonctionnement des labs, le manuel contient toute l'information nécessaire ! Commencez par `man lstart`_
+
+Nous allons créer un réseau très simple dans lequel 2 machines seront connectées sur un même réseau pour illustrer l'utilisation des labs.
+
+Commencez par créer un dossier dans lequel vous souhaitez créer votre lab puis placez vous à l'intérieur:
+
+```
+`mkdir lab-tuto
+cd lab-tuto
+```
+
+Il existe de nombreux fichiers de configurations utilisables dans un lab, nous allons nous concentrer sur seulement quelques uns.
+
+
+
+### lab.conf
+
+
+
+C'est le fichier principal de configuration d'un lab. On y indique les informations générales du lab, ainsi que les noms, interfaces et les domaines de collisions de chaque machine.
+
+Voici le fichier lab.conf que j'ai créé pour ce tutorial:
+
+```
+`LAB_DESCRIPTION="Lab d'initiation Netkit"
+LAB_AUTHOR="Morgan Ridel"
+LAB_WEB="morganridel.fr/blog"
+
+pc1[0]=dca
+pc2[0]=dca
+```
+
+Les 3 premières lignes parlent d'elles même et concernent uniquement le renseignement d'information sur le lab.
+Pour ce qui est des 2 lignes suivantes, elles permettent de spécifier le "branchement" des interfaces réseaux présentes sur chaque machine.
+
+La ligne `pc1[0]=dca` pourrait se traduire par: _L'interface eth**0** de **pc1** est connectée au domaine de collision "**dca**"._
+
+Ainsi les deux machines pc1 et pc2 seront "physiquement" sur le même réseau quand on les allumera.
+
+Nous allons ensuite créer un dossier à la racine du lab pour chaque machine que nous voulons démarrer:
+
+```bash
+mkdir pc1 pc2
+```
+
+Bien que ces dossiers soient vides, vous pouvez y placer des fichiers auxquels vous voudriez avoir accès à partir de la machine virtuelle.
+
+Finalement, nous allons créer un fichier pour chaque machine, contenant les commandes qui seront exécutées au lancement de celle-ci. Nous y configurerons l'interface réseau, ainsi il n'y aura pas besoin de le faire à la main à chaque démarrage: elles reprendront la même configuration à chaque démarrage de votre lab.
+
+Ces fichiers sont nommés selon la forme suivante: `nomMachine.startup` et sont placés à la racine du lab (et non pas dans le dossier correspondant à la machine).
+
+Voici pc1.startup:
+
+```bash
+ip addr add 10.0.0.1/8 dev eth0
+ip link set eth0 up
+```
+
+Et pc2.startup
+
+```bash
+ip addr add 10.0.0.2/8 dev eth0
+ip link set eth0 up
+```
+
+Donc au lancement, les machines prennent l'adresse ip 10.0.0.1 (ou 10.0.0.2 pour pc2) sur l'interface eth0, puis l'interface est activée (up).
+
+Les interfaces et0 des machines étant toutes deux reliées au domaine "dca" comme établi dans le lab.conf, les machines devraient pouvoir communiquer entre elle une fois démarrées.
+
+Votre lab est maintenant configuré et vous pouvez le lancer en vous plaçant à sa racine:
+
+```bash
+lstart -f
+```
+
+![](/static/images/labstarted.png)
+
+L'option -f autorise plusieurs machines virtuelles à démarrer en parallèle, ainsi vous n'avez pas à attendre que la première machine soit prête pour que la deuxième se lance.
+
+Un terminal se lance pour chaque machine virtuelle, vous pouvez interagir avec ces machines depuis ces terminaux. (Vous pouvez aussi [utiliser Screen](http://morganridel.fr/des-terminaux-en-masse-avec-gnu-screen/)).
+
+Si vous avez bien configuré vos fichiers .startup, les machines devraient pouvoir se pinger entre elle. Depuis pc1:
+
+```bash
+ping 10.0.0.2
+```
+
+![](/static/images/pinglab.png)
+
+Pour fermer le lab, utiliser un terminal en dehors des machines virtuelles:
+
+```
+`lhalt -q
+```
+
+Félicitations vous avez un lab fonctionnel ! Il peut servir de terrain d'expérimentation réseau, que vous soyez novice ou expert.

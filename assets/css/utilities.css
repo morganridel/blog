@@ -1,0 +1,57 @@
+@source inline("stack-{xs,sm,md,lg,xl,xxl}");
+@source inline("box-{xs,sm,md,lg,xl,xxl}");
+@source inline("box-bd-{xs,sm,md,lg,xl,xxl}");
+@source inline("center-{xs,sm,md,lg,xl,xxl}");
+
+/* I am using flex gap instead of the owl selector because 
+    I don't really need the benefits or exceptions for now */
+
+@utility stack-* {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: --value(--spacing);
+}
+
+
+/* I ignore most of the color and background-color for now, assuming I will set those as tailwind utilities */
+@utility box-* {
+    padding: --value(--spacing);
+}
+
+@utility box-border-* {
+    border-width: --value(--border-width);
+    border-style: solid
+}
+
+@utility center {
+    /* We need to set the min to 100% when it becomes smaller than the measure because if inside a flex,
+    children have a intrisic width of fit-content
+    it will grow to the longest word and go outside the parent */
+    --center-max-size: var(--measure);
+    max-inline-size: var(--center-max-size);
+    width: 100%;
+    margin-inline: auto;
+}
+
+@utility center-intrinsic {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+@utility center-* {
+    padding-inline-start: --value(--spacing);
+    padding-inline-end: --value(--spacing);
+    /* because of our reset to box-sizing: border-box we need to take into account padding
+    if we want to have our max width be really in characters */
+    --center-max-size: calc(var(--measure) + (--value(--spacing) * 2));
+}
+
+@utility cluster-* {
+    display: flex;
+    flex-wrap: wrap;
+    gap: --value(--spacing);
+    justify-content: flex-start;
+    align-items: center;
+}

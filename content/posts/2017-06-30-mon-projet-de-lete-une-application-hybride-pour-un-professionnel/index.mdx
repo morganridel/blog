@@ -1,0 +1,96 @@
+---
+title: "Mon projet de l'été : une application hybride pour un professionnel"
+permalink: /mon-projet-de-l-ete-une-application-hybride-pour-un-professionnel
+author: Morgan Ridel
+date: 2017-06-30
+hero: /static/images/hero.jpg
+---
+
+
+Cet été, je vais avoir l'occasion de travailler sur une application mobile hybride (iOS et Android) destinée à une entreprise. Je vais réaliser cette application avec 2 autres étudiants dans le cadre d'une étude de la junior-entreprise de mon école, l'<abbr title="Association Junior INSA de Rouen">AJIR</abbr>. Je suis plutôt impatient d'en commencer la conception car c'est ma première expérience de création d'application. Je vais donc pouvoir passer une partie de mon été à apprendre une nouvelle technologie tout en gagnant une petite somme d'argent ! L'application sera développée à l'aide du framework Ionic, ce qui évite de coder une application à la fois pour Android et pour iOS car Ionic s'occupe d'adapter le code en fonction de la plate-forme.
+
+![](/static/images/logo_ajir__big.png)
+
+
+
+## Les Junior-Entreprise et l'AJIR
+
+
+
+Je ne suis pas un expert sur les Junior-Entreprise (JE) mais je vais essayer d'en expliquer rapidement le principe. Une JE est une association implantée dans un établissement d'enseignement supérieur. Elle est à vocation économique et pédagogique, à but non lucratif.
+
+Elles agissent comme un intermédiaire entre des étudiants et des entreprises. Le but est de permettre à des étudiants de **mettre en application leurs connaissances tout en gagnant un peu d'argent** alors que les entreprises peuvent bénéficier de leur travail à moindre coût. Les étudiants peuvent alors mettre en pratique ce qu'ils apprennent à l'école dans une "étude" dans un domaine de compétences qui leur correspond. "Étude" est le mot utilisé pour évoquer un projet/mission réalisée dans le cadre de la JE.
+
+Une étude est constituée d'une phase d’analyse, d'une phase de réalisation et d'une phase de synthèse. Le but étant d'apporter une plus-value pédagogique aux étudiants en les faisant travailler sur un vrai projet. Pour ma part c'est une étude de développement d'application, utilisant une technologie que je ne connais pas (encore ;)), et sa batterie de tests unitaires.
+
+L'avantage c'est qu'en tant que simple étudiant qui travaille sur une étude, on a** aucun contact avec l'entreprise**. L'échange avec le client est géré par le chef de projet et en tant que développeur par exemple, je n'ai qu'à appliquer mes connaissances sans me soucier de cette relation. Bien sûr il est possible de devenir chef de projet si au contraire on est intéressé par ce côté gestion et relation avec un client.
+
+Ce que je vous décris représente ce qui me concerne en tant qu'étudiant qui va réaliser une mission. Les Junior-Entreprises sont plus complexes et possèdent plusieurs postes administratifs dans lesquels il est possible de s'investir autrement qu'en réalisant une étude. Vous pouvez trouver plus de détails sur [le site des JE](https://junior-entreprises.com/).
+
+L'[AJIR](http://ajir.insa-rouen.fr/) représente donc la JE de l'INSA de Rouen qui m'a donné la mission que je vais réaliser cet été.
+
+![](/static/images/Ionic_Logo.svg_.png)
+
+
+
+## Ionic, un framework pour des applications hybrides
+
+
+
+Ionic est le framework que je vais devoir utiliser pour réaliser l'application. Il permet d'**utiliser des technologies Web (HTML, CSS et Javascript) afin de créer une application multi-plateforme** dont notamment iOS et Android.
+
+Cela est possible car Ionic est basé sur [Cordova](https://cordova.apache.org/). Cordova permet de "convertir" le code Web vers la plate-forme désirée, s'occupant de générer le code natif (Java pour Android par exemple). De plus Cordova donne accès aux fonctionnalités natives des téléphones comme la camera, la géo-localisation ou encore l’accéléromètre. Je n'ai jamais testé Cordova seul, cependant de ce que j'ai compris cela permet seulement de purement afficher une page Web dans une application, avec exactement le même rendu que dans un navigateur (donc pas vraiment adapté à une application). A moins de vouloir coder soi même tous ses composants, c'est là qu'un framework comme Ionic entre en jeu !
+
+Ionic rajoute une couche d'abstraction sur Cordova. Il agit en quelque sorte comme Bootstrap en fournissant **un ensemble de composants pré-créée et adaptés au design d'une application**. On y retrouve des boutons, des menus, la prise en compte des gestes du doigt... Tous les éléments ont un design adapté au mobile, mais peuvent bien sur être personnalisé en modifiant le CSS.
+
+Ionic repose également sur Angular afin d'avoir des composants Javascript encore plus élaborés et de pouvoir créer de nouveaux tags HTML, simplifiant ainsi énormément la lecture et l'écriture du code. Voici un exemple tiré de [la doc](https://ionicframework.com/docs/components/#toolbar-buttons):
+
+```
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons start>
+      <button ion-button icon-only color="royal">
+        <ion-icon name="search"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-title>Send To...</ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only color="royal">
+        <ion-icon name="person-add"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content></ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <p>Ash, Misty, Brock</p>
+    <ion-buttons end>
+      <button ion-button icon-right color="royal">
+        Send
+        <ion-icon name="send"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>
+```
+
+
+
+![](/static/images/ionicexample.png)
+
+On constate qu'obtenir un affichage typique d'application est réalisable très simplement en quelques tags HTML !
+
+En plus de tout ça, Ionic permet aussi d'utiliser les fonctionnalités natives (caméra etc...) comme Cordova mais en simplifiant leurs utilisations.
+
+Ionic est donc pour moi un framework très adapté à la tâche que je dois réaliser. Ne pas utiliser un tel framework obligerait mon équipe à** coder 2 fois la même application** (une fois pour Android et une fois pour iOS).
+
+
+
+## Une expérience prometteuse
+
+
+
+Réaliser cette étude va donc me permettre de réaliser ma première application mobile, tout en apprenant à utiliser plusieurs nouvelles technologies et en gagnant un peu d'argent. C'est le genre de technologies que j'aurais pu décider d'apprendre par moi-même mais dans cette situation je vais pouvoir avoir une idée d'un réel projet et pouvoir l'ajouter dans mon CV. Je peux donc tirer beaucoup de profit de cette expérience en échange d'un travail que j'aurais pu en partie réaliser sans qu'on me le demande.

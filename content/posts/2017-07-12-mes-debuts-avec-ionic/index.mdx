@@ -1,0 +1,93 @@
+---
+title: Mes débuts avec Ionic
+author: Morgan Ridel
+date: 2017-07-12
+hero: /static/images/Ionic_Logo.svg_-1024x356.png
+---
+
+Depuis quelques jours, je passe pas mal de temps à travailler sur le framework Ionic pour réaliser [mon application](../mon-projet-de-l-ete-une-application-hybride-pour-un-professionnel/). Et ce n'est pas forcément toujours évident ! Je voulais donc partager quelques retours sur ce que j'ai fait pour l'instant.
+
+
+
+## Création d'un projet avec Ionic
+
+
+
+Tout d'abord Ionic est un module de Node.js. N'ayant encore jamais utilisé Node j'ai donc dû [le télécharger](https://nodejs.org/en/) et l'installer. J'ai encore très peu de connaissances sur son fonctionnement et étant donné ma priorité actuelle je me contente de suivre les instructions de la documentation de Ionic pour l'utiliser.
+
+En gros, Node.js permet d'utiliser du Javascript coté serveur et fournit une énorme base de données de modules à l'aide du NPM (Node Package Manager).
+
+Il permet donc d'installer Ionic et toutes ses dépendances de façon automatisée pour pouvoir ensuite travailler sur un projet d'application.
+
+Après l'installation de Node on peut donc utiliser cette commande:
+
+```
+npm install -g cordova ionic
+```
+
+Le paramètre -g permet d'effectuer une installation globale, donnant accès aux commandes Ionic de n'importe où et à ne pas être limité à un dossier spécifique.
+
+Il ne faut pas oublier d'installer le SDK Android (que j'ai personnellement obtenu avec [Android Studio](https://developer.android.com/studio/index.html)) afin de pouvoir compiler et créer les applications pour Android. Il n'est malheureusement pas possible de faire la même chose pour iOS sans Mac, j'ai donc dû passer par un autre moyen pour tester les applications sur mon iPhone (Je l'explique plus bas).
+
+Une fois ces étapes effectuer, j'ai enfin pu créer mon premier projet avec Ionic.
+
+```
+ionic start appTest tabs
+```
+
+"appTest" est le nom du projet, et "tabs" le template utilisé. Ce template permet d'avoir un début d'application déjà construit. Ici c'est une interface constituée d'onglet permettant de naviguer entre différentes pages. Il en existe d'autre dont le template "blank" en particulier qui permet d'avoir simplement une application vide, avec les fichiers de bases créés.
+
+Pour comprendre les rudiments d'Ionic, j'ai longtemps parcouru les fichiers du template, cherchant les liens entre les différents fichiers, la hiérarchie des dossiers et le code à l'intérieur. En faisant ça tout en lisant la documentation et en particulier le [tutorial officiel](https://ionicframework.com/docs/intro/tutorial/), j'ai pu assimiler quelques notions mais tout semblait flou. J'ai alors vite pris conscience d'une nouvelle difficulté.
+
+
+
+## Angular et Ionic
+
+
+
+Ionic utilise énormément Angular. Toute la construction du répertoire d'un projet est modelée sur la réalisation d'une application avec Angular. Une fois que j'ai remarqué ça et étant donné que ma connaissance du Javascript se résume aux bases avec un peu de jQuery, j'ai changé de documentation et me suis dirigé vers [celle d'Angular](https://angular.io/docs).
+
+Un projet réalisé avec Angular utilise à la fois du HTML pour les templates, du SASS pour le CSS, et du TypeScript pour créer des modules/classes compilés ensuite en Javascript. Tout ça en ajoutant des directives, annotations et autres éléments propres à Angular. N'ayant aucune connaissance dans la plupart des technologies utilisées, j'avais souvent l'impression que tout était lié sans vraiment comprendre comment tout marchait ensemble. Toutes les heures j'avais un déclic en comprenant comment fonctionnait un élément, avant de découvrir autre chose qui remettait en question ou qui validait ce que je venais d'apprendre. Et c'était comme ça à chaque nouvelle page de documentation. Je ne vais pas vous mentir, j'aime ce processus (surtout avec le recul). Bien que c'est parfois frustrant d'avoir l'impression de ne pas avancer et de bloquer sur une notion particulière, j'ai cette sensation d'apprendre quelque chose et j'ai ce plaisir quand mon code fait enfin ce que j'attends de lui.
+
+De plus, le fait de parcourir les documentations pour apprendre et de voir un peu de SASS et de TypeScript ne peut que me servir pour le futur !
+
+Sans devenir expert en Angular, j'ai petit à petit cerné certains concepts d'Angular comme les components, services, templates... Et j'ai voulu mettre en application ces connaissances en créant une application Ionic très simple !
+
+
+
+## Application "Plus ou Moins"
+
+
+
+Le but était de réaliser un petit jeu très simple, typique des débuts en algorithmique, mais de lui fournir une simple interface graphique qui s'actualise en temps réel et d'utiliser les composants d'Angular.
+
+Le joueur pense à un chiffre entre 1 et 100. L'ordinateur tente de deviner ce chiffre le plus rapidement possible par dichotomie.
+
+J'ai pu utiliser le passage d'une page à une autre, le lien entre le component et son template, un peu de TypeScript pour les classes etc...
+
+
+<video style="width:auto; max-width:680px; margin: 0 auto" controls="controls">
+  <source type="video/mp4" src="/static/images/plusoumoins.mp4"></source>
+  <p>Your browser does not support the video element.</p>
+</video>
+
+Même si il me reste encore un long chemin à parcourir pour maîtriser le framework, ce petit jeu m'a rendu un peu plus confiant pour me lancer dans l'application que je dois réaliser cet été !
+
+
+
+## Comment tester son application sur iPhone sans Mac
+
+
+
+Voici un petit protocole très simple pour pouvoir tester les applications Ionic sur son iPhone même quand on ne dispose pas d'un Mac.
+    -Créer un compte sur [https://apps.ionic.io/apps/](https://apps.ionic.io/apps/)
+    - Créer une application avec le bouton "New App". Elle servira de "support" à votre projet, peu importe le nom.
+    - Dans le répertoire de votre projet Ionic, à la racine, exécutez la commande suivante: ionic link
+    - Sélectionner le "support" voulu
+    - Utiliser ionic upload pour envoyer votre application dans son état actuel sur votre projet en ligne.
+    - Installer l'application [Ionic View](https://view.ionic.io/) sur votre iPhone.
+    - Vous pouvez désormais accéder à toutes vos application depuis Ionic View sur votre téléphone !
+    - Mettez à jour votre projet en utilisant ionic upload autant que vous le souhaitez. Ce n'est pas vraiment viable pour tester systématiquement à cause du délai d'upload.
+Pour simplement tester dans le navigateur, il suffit d'utiliser ionic serve .
+
+

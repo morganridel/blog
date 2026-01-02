@@ -1,0 +1,137 @@
+---
+title: Les bases des branches avec Git
+author: Morgan Ridel
+date: 2017-08-03
+hero: /static/images/gitbranch.jpg
+---
+
+Cet article fait suite à mon [autre article sur les bases de Git et GitHub](../comment-utiliser-git-en-10-minutes/), je vous invite fortement à le lire si vous débutez totalement avec Git.
+
+Nous avons vu précédemment comment créer un nouveau projet avec Git, y ajouter des commits, et le maintenir à jour sur GitHub. Maintenant, nous allons nous intéresser aux branches et la façon dont elles peuvent nous aider à développer de façon plus propre.
+
+
+
+## Qu'est ce qu'une branche ?
+
+
+
+Une branche dans Git est un pointeur vers un commit. La branche originelle s’appelle **master**. Si vous utilisez seulement cette branche (comme dans l'article précédent), elle pointera toujours vers le dernier commit.
+
+Chaque commit peut avoir un ou plusieurs commits "parents". Pour master, on peut ainsi partir du dernier commit et remonter tout le long de l'historique.
+
+Bien que la branche soit théoriquement seulement un pointeur vers un unique commit, j'ai tendance à parler de toute la "lignée" de commits précédents celui pointé quand je parle de "branche". Dans l'article précédent, chaque nouveau commit s'ajoutait donc à la branche master.
+
+Quand on crée un nouvelle branche, celle-ci pointe vers le commit sur lequel vous êtes positionné actuellement. Cependant, lors d'un nouveau commit, c'est la branche sur laquelle vous êtes actuellement qui va pointer sur ce nouveau commit. Aucune autre branche n'est affectée.
+
+Imaginez que vous partez du projet de l'article précédent, contenant uniquement la branche master et quelques commits. Si vous décidiez de créer une nouvelle branche et de vous placer dessus, la branche master et la nouvelle branche pointeraient toutes les deux au même endroit.
+
+En revanche, après votre prochain commit, la nouvelle branche pointera sur celui-ci, alors que la branche master pointera toujours vers le commit précédent.
+
+![](/static/images/git-branch.png)
+
+Cette image tirée du [livre](https://git-scm.com/book/en/v1/Git-Branching-Basic-Branching-and-Merging) évoqué dans l'article précédent permet de visualiser l'effet des branches sur votre projet.
+
+Dans cette image, on peut imaginer que la branche iis53 à été crée après le commit C2. Le développeur s'est alors placé sur cette branche et à fait un nouveau commit C3. Il est ensuite retourné sur la branche master et à fait un commit C4. Finalement, il s'est de nouveau déplacé sur la branche iss53 pour faire le commit C5.
+
+Le résultat est un projet avec plusieurs "histoires" et des évolutions différentes à partir du même point.
+
+A quoi cela peut-il bien servir ?
+
+Nous verrons cela en détail plus bas mais travailler sur des branches permet de s'isoler de la branche principale pour coder une nouvelle fonctionnalité, ou corriger un bug. Ensuite on peut ajouter le travail terminé à la branche principale en la fusionnant avec la branche concernée.
+
+La branche master est en général considérée comme la branche principale et doit dans l'idéal rester stable. Si quelqu'un veut utiliser le projet ou pour la production, c'est la branche master qui est utilisée.
+
+Ainsi on crée d'autres branches pour travailler sur des points spécifiques du projet sans prendre le risque d'endommager la branche master.
+
+
+## En pratique, les commandes Git
+
+
+
+
+
+### Créer des branches et s'y déplacer
+
+
+
+Voyons maintenant comment utiliser Git pour créer des branches et naviguer entre différentes branches.
+
+```git
+git branch ma-branche
+```
+
+Créée une branche ma-branche.
+
+```git
+git branch -a
+```
+
+Montre la liste des branches existantes (y compris les branches sur le repository distant).
+
+```git
+git checkout ma-branche
+```
+
+Vous positionne sur la branche ma-branche. Tout le contenu du répertoire de travail devient alors celui correspondant au commit pointé par la branche.
+
+```git
+git checkout master
+```
+
+Permet de retourner sur la branche master.
+
+```git
+git branch -d ma-branche
+```
+
+Supprime la branche ma-branche (utiliser -D pour pouvoir supprimer une branche qui n'a pas été fusionnée)
+
+Et la commande magique:
+
+```git
+git checkout -b ma-branche2
+```
+
+Elle crée une branche nommée ma-branche2 et s'y positionne immédiatement.
+
+
+
+### Fusionner des branches
+
+
+
+Quand vous avez terminé de travailler sur une fonctionnalité, vous allez sûrement vouloir appliquer vos changements à une autre branche (master par exemple).
+
+Pour cela il suffit de vous placer sur la branche sur laquelle vous voulez appliquer les changements (master) et de "merge" (fusionner) l'autre branche dessus:
+
+```git
+git checkout master
+git merge ma-branche2
+```
+
+Une fusion peut provoquer des conflits, dans le cas où la branche master aurait par exemple évolué depuis la création de la branche, et qu'une même ligne est modifiée sur la branche master et sur la branche ma-branche2.
+
+Dans ce cas, il faut aller résoudre le conflit manuellement en modifiant les fichiers concernés, puis commit les changements nécessaires à la résolution du conflit.
+
+**Remarque importante**: En travaillant sur un projet hébergé sur GitHub, il se peut que vous n'ayez pas accès au push sur la branche master (pour éviter que tout le monde puisse rajouter n'importe quoi). Dans ce cas vous ne devez pas fusionner la branche que vous avez créée localement avec la branche master.
+Vous pouvez push votre branche vers GitHub:
+
+```git
+git push origin ma-branche2
+```
+
+Ensuite vous pouvez proposer une **pull request** pour que les responsables du code puissent étudier votre changement, et éventuellement accepter la fusion de votre code sur la branche master.
+
+
+
+## Conclusion
+
+
+
+Avec ces commandes et celles de l'article précédent, vous devriez pouvoir utiliser Git et GitHub de façon basique et ne plus jamais perdre aucune donnée lors de vos projet !
+
+Git possède de nombreuses autres fonctionnalités que je ne connais pas moi-même. Il y a de nombreuses ressources sur Internet pour en apprendre plus, sans compter les questions sur StackOverflow.
+
+Comme d'habitude, si vous avez des questions ou des remarques, **faites m'en part dans les commentaires !**
+
+_La suite de cet article est disponible: [Comment remonter dans le temps avec Git](../remonter-dans-le-temps-avec-git/)_

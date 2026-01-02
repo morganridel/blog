@@ -1,0 +1,218 @@
+---
+title: Comment utiliser Make
+author: Morgan Ridel
+date: 2017-01-26
+---
+
+Aujourd'hui, je vais parler de Make. Il était impossible pour moi de continuer d'écrire des articles sans vous expliquer l'origine du nom du blog ! Make est un outil qui permet d'automatiser la création de fichiers et particulièrement d'**automatiser la compilation et création de vos fichiers exécutables à partir des fichiers sources**. Oui, une fois votre Makefile (fichier utilisé par Make) configuré correctement, vous pourrez recompiler tout votre projet en une seule ligne de commande.
+
+
+## Principe de base
+
+
+Make utilise un fichier nommé Makefile contenant des **règles**. Chaque règle représente en fait une **cible** à créer, par exemple votre fichier exécutable final. Une règle se base donc sur le modèle suivant:
+```
+cible : dépendance(s)
+      commandes...
+```
+Attention : La tabulation est indispensable au bon fonctionnement du Makefile
+
+Ainsi, pour générer la cible il suffit de se placer dans le dossier contenant le Makefile et de taper : _make cible_
+Make vérifie alors si le(s) dépendance(s) sont plus récentes que la cible (ou si la cible n'existe pas encore). Si c'est le cas, la cible est (re)générée en exécutant les commandes.
+
+
+## Compiler un projet avec un Makefile
+
+
+Dans cette partie nous allons considérer avoir un dossier projet codé en C avec l'arborescence suivante:
+
+
+
+	
+  * Projet
+
+	
+    * bin : Contiendra l’exécutable du projet
+
+	
+    * include : Les fichiers header .h
+
+	
+    * src : Les fichiers sources .c
+
+
+
+
+
+Le projet est composé de 3 fichiers .c : main.c fichier1.c fichier2.c ainsi que de leurs headers.
+
+Pour obtenir l'exécutable de ce projet on pourrait faire un simple makefile de ce style:
+```
+bin/executable : src/main.o src/fichier1.o src/fichier2.o
+      gcc  -o bin/executable src/main.o src/fichier1.o src/fichier2.o
+
+
+src/main.o : src/main.c
+    gcc -o src/main.o -c src/main.c -Wall -pedantic -g -std=c99  -I include
+
+
+src/fichier1.o : src/fichier1.c
+    gcc -o src/fichier1.o -c src/fichier1.c $(CFLAGS) -Wall -pedantic -g -std=c99  -I include
+
+src/fichier2.o : src/fichier2.c
+    gcc -o src/fichier2.o -c src/fichier2.c -Wall -pedantic -g -std=c99  -I include
+```
+Avec ce makefile, lancer _make executable _dans un terminal devrait donc compiler chaque fichier puis créer l'exécutable... Mais ce fichier est très lourd ! Et ici on a seulement 3 fichiers sources ! Rassurez-vous, il y a moyen de se simplifier la vie. Make permet l'utilisation de variable permettant de rendre notre makefile plus concis.
+
+
+## Les variables
+
+
+Nous allons utiliser 2 types de variables dans notre makefile pour le simplifier, celles que nous déclarerons nous-même, et celles pré-existantes.
+
+
+### Faire ses propres variables
+
+
+Il est possible de déclarer soi-même une variable à laquelle on assignera différentes valeurs que nous utilisons souvent. Pour définir une nouvelle variable, il suffit d'écrire au début du makefile:
+```
+NOMDELAVARIABLE=maValeur
+```
+Pour l'appeler il faut utiliser cette syntaxe:
+```
+$(NOMDELAVARIABLE)
+```
+On va donc définir plusieurs variables au début du fichier pour éviter de récrire tout le temps certaines choses:
+```
+BINDIR=bin
+INCLUDEDIR=include
+CC = gcc
+CFLAGS=-Wall -pedantic -g -std=c99  -I$(INCLUDEDIR)  
+EXEC=executable
+```
+Plus besoin d'écrire tous les paramètres de gcc à chaque fois, CFLAGS s'en occupe ! On obtient alors le code suivant:
+```
+BINDIR=bin
+INCLUDEDIR=include
+CC = gcc
+CFLAGS=-Wall -pedantic -g -std=c99  -I$(INCLUDEDIR)  
+EXEC=executable
+
+$(BINDIR)/$(EXEC) : $(SRCDIR)/main.o $(SRCDIR)/fichier1.o $(SRCDIR)/fichier2.o
+    $(CC) -o $(BINDIR)/$(EXEC) $(SRCDIR)/main.o $(SRCDIR)/fichier1.o $(SRCDIR)/fichier2.o
+
+$(SRCDIR)/main.o : $(SRCDIR)/main.c
+    $(CC) -o $(SRCDIR)/main.o -c $(SRCDIR)/main.c $(CFLAGS)
+
+$(SRCDIR)/fichier1.o : $(SRCDIR)/fichier1.c
+    $(CC) -o $(SRCDIR)/fichier1.o  -c $(SRCDIR)/fichier1.c $(CFLAGS)
+
+$(SRCDIR)/fichier2.o : $(SRCDIR)/fichier2.c
+    $(CC) -o $(SRCDIR)/fichier2.o  -c $(SRCDIR)/fichier2.c $(CFLAGS)
+```
+On gagne aussi un avantage énorme. Si nous décidons de renommer des dossiers ou de rajouter des paramètres à la compilation à tout moment, il suffit de changer la variable correspondante sans avoir à changer les paramètres dans la règle de chaque fichiers. Malgré cette nette amélioration on voit encore pas mal de redondance sur l'écriture du nom des fichiers...
+
+
+### Les variables internes
+
+
+Make dispose également de panoplie de variables qui nous arrange bien pour écrire nos règles, en voici:
+
+
+
+	
+  * **$@ **: nom de la cible de la règle
+
+	
+  * **$<** : nom de la première dépendance de la règle
+
+	
+  * **$^ **: liste des dépendances de la règle
+
+	
+  * **$? **: liste des dépendances de la règle plus récente que la cible
+
+
+On peut donc à nouveau simplifier notre code (et surtout éviter de taper les potentielles dizaines dépendances si notre règle les affectent toutes):
+```
+BINDIR=bin
+INCLUDEDIR=include
+CC = gcc
+CFLAGS=-Wall -pedantic -g -std=c99  -I$(INCLUDEDIR)  
+EXEC=executable
+
+$(BINDIR)/$(EXEC) : $(SRCDIR)/main.o $(SRCDIR)/fichier1.o $(SRCDIR)/fichier2.o
+    $(CC) -o $@ $^
+
+$(SRCDIR)/main.o : $(SRCDIR)/main.c
+    $(CC) -o $@ -c $< $(CFLAGS)
+
+$(SRCDIR)/fichier1.o : $(SRCDIR)/fichier1.c  
+    $(CC) -o $@ -c $< $(CFLAGS)
+
+$(SRCDIR)/fichier2.o : $(SRCDIR)/fichier2.c  
+    $(CC) -o $@ -c $< $(CFLAGS)
+```
+Plus propre n'est-ce pas ? Il reste un dernier problème, si nous avons énormément de fichier à compiler dans notre projet, il faut écrire une règle pour chaque ! Pourtant on voit bien que les règles de création de .o sont clairement similaires...
+
+
+## Une règle générique
+
+
+Pour éviter d'écrire plusieurs fois la règle qui va transformer tous nos fichiers sources en code objet, nous allons créer une règle générique. Dès qu'on aura un .o en dépendance, c'est cette règle qui sera utilisée:
+```
+BINDIR=bin
+INCLUDEDIR=include
+CC = gcc
+CFLAGS=-Wall -pedantic -g -std=c99  -I$(INCLUDEDIR)  
+EXEC=executable
+
+$(BINDIR)/$(EXEC) : $(SRCDIR)/main.o $(SRCDIR)/fichier1.o $(SRCDIR)/fichier2.o
+    $(CC) -o $@ $^
+
+$(SRCDIR)/%.o : $(SRCDIR)/%.c
+    $(CC) -o $@ -c $< $(CFLAGS)
+```
+Avec ce makefile, même si nous avons 300 fichiers sources, nous devrons seulement ajouter des dépendances à la règle qui crée l’exécutable.
+
+
+## La touche finale
+
+
+Pour finir, on peut par convention utiliser quelques règles dans le makefile. Nous allons créer une règle **all **qui se contentera d'utiliser la règle pour créer l’exécutable ainsi qu'une règle **clean** qui nettoiera les répertoires en supprimant les fichiers générés.
+```
+BINDIR=bin
+INCLUDEDIR=include
+CC = gcc
+CFLAGS=-Wall -pedantic -g -std=c99  -I$(INCLUDEDIR)  
+EXEC=executable
+
+all :  $(BINDIR)/$(EXEC)
+
+$(BINDIR)/$(EXEC) : $(SRCDIR)/main.o $(SRCDIR)/fichier1.o $(SRCDIR)/fichier2.o
+    $(CC) -o $@ $^
+
+$(SRCDIR)/%.o : $(SRCDIR)/%.c
+    $(CC) -o $@ -c $< $(CFLAGS)
+
+clean :
+    rm -rf $(BINDIR)/*
+    rm -rf $(SRCDIR)/*.o
+```
+Et voilà ! Il suffit maintenant d'ouvrir un terminal et de taper _make all_ pour compiler tout notre projet ! _make clean_ supprimera tous les fichiers crées pour laisser un répertoire propre.
+_Note: On peut aussi utiliser seulement la commande **make **seule, ce qui aura pour effet de lancer la première règle, ici all._
+
+
+## Conclusion
+
+
+Vous savez désormais comment créer un makefile pour compiler tout vos projets en une seule ligne de commande. Je vous invite à vous renseigner davantage pour apprendre à faire des **makefile encore plus généraux** !
+
+Certains d'entre vous pensent peut-être que faire un makefile est inutile car la plupart des IDE s'occupent entièrement de la compilation d'un projet. Je vous répondrai alors qu'effectivement un IDE permet de s'abstraire des commandes de compilation mais que je pense qu'il peut être intéressant de connaître au moins de loin le fonctionnement de la compilation (le passage par les fichiers .o en C par exemple) ne serait-ce que pour pouvoir changer/rajouter des paramètres à vos compilations si vous en avez besoin un jour. Je ne suis pas un connaisseur en compilation moi-même mais je trouve que savoir compiler en ligne de commande reste une compétence intéressante ! De plus, au delà de la compilation, Make permet d'automatiser n'importe quelle tâche en ligne de commande ! Vous pouvez l'utiliser pour effectuer des actions régulières et répétitives mais identiques (décompresser une archive et convertir des fichiers par exemple).
+
+Le nom du blog fait donc référence à l'utilisation d'un makefile ! Plus précisément à l'utilisation d'une cible **tests **qui généraient des tests unitaires lors d'un projet réalisé en cours de programmation, pour apprendre l'utilisation de [CUnit](http://cunit.sourceforge.net/). Ce blog représente donc mes "tests", ce que j'y explique n'est pas forcément parfait et peut être erroné/à corriger, j'y partage mon expérience à mon échelle ! Je vous propose de m'aider à me corriger si vous trouvez des erreurs ;)
+
+**Et vous, avez-vous déjà utilisé des makefile et qu'en pensez-vous ?**
+
+Pour plus d'informations:
+[http://www.gnu.org/software/make/manual/html_node/index.html](http://www.gnu.org/software/make/manual/html_node/index.html)[http://gl.developpez.com/tutoriel/outil/makefile/](http://gl.developpez.com/tutoriel/outil/makefile/)
