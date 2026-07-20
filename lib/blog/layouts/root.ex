@@ -31,6 +31,11 @@ defmodule Blog.Layouts.Root do
                     after:bg-accent after:transition-transform hover:after:scale-x-100">
                     <a href="/about" class="text-xl text-base">About</a>
             </div>
+            <div class="relative block after:absolute after:left-1/2 after:bottom-0 after:h-(--border-width-md) after:w-full
+                        after:-translate-x-1/2 after:translate-y-(--border-width-md) after:scale-x-0 after:origin-center
+                    after:bg-accent after:transition-transform hover:after:scale-x-100">
+                    <a href="/projects" class="text-xl text-base">Projects</a>
+            </div>
           </div>
           <div class="cluster-md">
             <a target="_blank" rel="noopener nofollow" aria-label="Link to https://twitter.com/morganridel" href="https://twitter.com/morganridel">
